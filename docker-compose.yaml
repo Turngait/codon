@@ -1,0 +1,122 @@
+version: '3.1'
+
+services:
+
+  # web:
+  #   image: nginx
+  #   container_name: my-notes-nginx
+  #   restart: always
+  #   ports:
+  #     - 8080:80
+
+  # Gateway module in backlog for today
+  cd-gate:
+    image: "node:22"
+    container_name: cd-gate
+    working_dir: /home/node/app
+    volumes:
+      - ./gate:/home/node/app
+    expose:
+      - "8081"
+    links:
+      - mongo
+      # - redis
+      - cd-auth
+    command: npm run start:dev
+    environment:
+      MONGOLINK: ${MONGODB}
+      PORT: 5000
+    ports:
+      - 8081:5000
+
+  cd-users:
+    build: .
+    ports:
+      - 8084:8000
+    environment:
+      ENV: DEV
+      PORT: 8000
+      MONGOLINK: ${MONGODB}
+    volumes:
+      - ./users:/users
+    restart: always
+    container_name: cd-users
+
+  cd-consumable:
+    build:
+      context: .
+      dockerfile: consumable.Dockerfile
+    ports:
+      - 8085:8000
+    environment:
+      ENV: DEV
+      PORT: 8000
+      MONGOLINK: ${MONGODB}
+    volumes:
+      - ./consumable:/consumable
+    restart: always
+    container_name: cd-consumable
+  
+  cd-auth:
+    image: "node:22"
+    container_name: cd-auth
+    working_dir: /home/node/app
+    volumes:
+      - ./auth:/home/node/app
+    command: npm run dev
+    environment:
+      MONGOLINK: ${MONGODB}
+      PORT: 3000
+      SALT: ${SALT}
+      SALT2: ${SALT2}
+    links:
+      - mongo
+    ports:
+      - 8082:3000
+  
+  # logger:
+  #   build: .
+  #   ports:
+  #     - "5000:5000"
+  #   environment:
+  #     ENV: DEV
+  #   volumes:
+  #     - ./logger:/logger
+  #   restart: always
+  #   container_name: logger
+
+  mongo:
+    image: mongo
+    restart: always
+    volumes: 
+      - ./db/mongo:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_NAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PWD}
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    links:
+      - mongo
+    ports:
+      - 8083:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_NAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PWD}
+      ME_CONFIG_MONGODB_URL: ${MONGOEXPRESSLINK}
+
+  # rmq:
+  #   image: rabbitmq:3-management
+  #   restart: always
+  #   ports:
+  #     - 15672:15672
+  #     - 5672:5672
+
+  # redis:
+  #   image: redis
+  #   container_name: sw-redis
+  #   restart: always
+  #   volumes: 
+  #     - ./db/redis/data:/data
+  #     - ./db/redis/etc/redis.conf:/usr/local/etc/redis/redis.conf

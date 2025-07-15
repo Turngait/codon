@@ -1,0 +1,9 @@
+/node_modules
+/db
+/db_copy
+/config
+npm-debug.log
+.env
+
+/auth/dist
+/auth/node_modules
