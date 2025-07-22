@@ -10,6 +10,12 @@ class AnalysisData(BaseModel):
   normal: str
   description: str
 
+class AnalysisDataWithId(BaseModel):
+  id: str
+  title: str
+  volume: str
+  normal: str
+  description: str
 
 class AddAnalysis(BaseModel):
   user_id: str
@@ -40,6 +46,15 @@ class EditAnalysis(BaseModel):
   equipment: str
   description: str
 
+class AddValueReq(BaseModel):
+    user_id: str
+    analysis_id: str
+    value: AnalysisData
+
+class EditValueReq(BaseModel):
+    user_id: str
+    analysis_id: str
+    value: AnalysisDataWithId
 
 
 @app.post("/analysis")
@@ -63,3 +78,13 @@ async def delete_analysis(req: DeleteAnalysis):
 async def update_analysis(req: EditAnalysis):
    analysis = Analysis()
    return await analysis.edit_analysis(req.model_dump())
+
+@app.post("/analysis/value")
+async def add_value_to_analysis(req: AddValueReq):
+   analysis = Analysis()
+   return await analysis.add_value(req.model_dump())
+
+@app.put("/analysis/value")
+async def update_value_to_analysis(req: EditValueReq):
+   analysis = Analysis()
+   return await analysis.update_value(req.model_dump())

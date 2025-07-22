@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import URI from '../config/uri';
-import { AnalysisDTO, AnalysisGroupDTO } from './analysis.dto';
+import {
+  AnalysisDTO,
+  AnalysisGroupDTO,
+  AddValueDTO,
+  EditValueDTO,
+} from './analysis.dto';
 
 @Injectable()
 export class AnalysisService {
@@ -101,6 +106,38 @@ export class AnalysisService {
     const result = await fetch(URI.CONS_URL + 'analysis_groups', {
       method: 'PUT',
       body: JSON.stringify({ user_id, ...analysis }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        console.log(res.status);
+        return res.status;
+      }
+    });
+    return result;
+  }
+
+  async addValueToAnalysis(user_id: string, value: AddValueDTO) {
+    const result = await fetch(URI.CONS_URL + 'analysis/value', {
+      method: 'POST',
+      body: JSON.stringify({ user_id, ...value }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        console.log(res.status);
+        return res.status;
+      }
+    });
+    return result;
+  }
+
+  async updateValueToAnalysis(user_id: string, value: EditValueDTO) {
+    const result = await fetch(URI.CONS_URL + 'analysis/value', {
+      method: 'PUT',
+      body: JSON.stringify({ user_id, ...value }),
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => {
       if (res.status == 200) {

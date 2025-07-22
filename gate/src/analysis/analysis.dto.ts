@@ -28,3 +28,24 @@ export class AnalysisGroupDTO {
 export class DeleteAnalysisGroupDTO {
   id: string;
 }
+
+export class AddValueDTO {
+  analysis_id: string;
+  value: {
+    title: string;
+    volume: string;
+    normal: string;
+    description: string;
+  };
+}
+
+export class EditValueDTO {
+  analysis_id: string;
+  value: {
+    id: string;
+    title: string;
+    volume: string;
+    normal: string;
+    description: string;
+  };
+}

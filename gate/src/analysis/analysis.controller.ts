@@ -13,6 +13,8 @@ import {
   DeleteAnalysisDTO,
   AnalysisGroupDTO,
   DeleteAnalysisGroupDTO,
+  AddValueDTO,
+  EditValueDTO,
 } from './analysis.dto';
 
 @Controller('analysis')
@@ -79,6 +81,28 @@ export class AnalysisController {
     return await this.analysisService.updateGroup(
       headers.user_id,
       analysisGroup,
+    );
+  }
+
+  @Post('/value')
+  async addValueToAnalysis(
+    @Body() addValueReq: AddValueDTO,
+    @Headers() headers,
+  ) {
+    return await this.analysisService.addValueToAnalysis(
+      headers.user_id,
+      addValueReq,
+    );
+  }
+
+  @Put('/value')
+  async updateValueToAnalysis(
+    @Body() updateValueReq: EditValueDTO,
+    @Headers() headers,
+  ) {
+    return await this.analysisService.updateValueToAnalysis(
+      headers.user_id,
+      updateValueReq,
     );
   }
 }

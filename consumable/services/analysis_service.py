@@ -85,6 +85,58 @@ class Analysis:
       return {'status': 5000, "msg": 'Server error'}
 
 
+  async def add_value(self, data):
+      analysis_repo = AnalysisRepositories(data["user_id"])
+      is_find = 0
+      try:
+          analysis = await analysis_repo.get_analysis_for_user()
+          if analysis is None:
+              return {'status': 4004, "msg": 'Analysis not found'}
+          for an in analysis['analysis']:
+              if an["_id"] == data["analysis_id"]:
+                  data["value"]["_id"] = str(ObjectId())
+                  an["values"].append(data["value"])
+                  is_find += 1
+                  break
+          if is_find:
+              await analysis_repo.update_analysis_by_id(analysis["_id"], analysis)
+              return {'status': 200, "msg": 'Value was added'}
+          else:
+              return {'status': 4004, "msg": 'Analysis not found'}
+      except BaseException as err:
+        print(err)
+        return {'status': 5000, "msg": 'Server error'}
+
+  async def update_value(self, data):
+      analysis_repo = AnalysisRepositories(data["user_id"])
+      is_find = 0
+      try:
+          analysis = await analysis_repo.get_analysis_for_user()
+          if analysis is None:
+              return {'status': 4004, "msg": 'Analysis not found'}
+
+          for an in analysis['analysis']:
+              if an["_id"] == data["analysis_id"]:
+                  i = 0
+                  for val in an["values"]:
+                      if val["_id"] == data["value"]["id"]:
+                          data["value"]["_id"] = data["value"]["id"]
+                          del data["value"]["id"]
+                          an["values"][i] = data["value"]
+                          is_find += 1
+                          break
+                      i += 1
+
+          if is_find:
+              await analysis_repo.update_analysis_by_id(analysis["_id"], analysis)
+              return {'status': 200, "msg": 'Value was updated'}
+          else:
+              return {'status': 4004, "msg": 'Analysis not found'}
+      except BaseException as err:
+        print(err)
+        return {'status': 5000, "msg": 'Server error'}
+
+
   def compose_new_analysis(self, data):
     for val in data['values']:
       val["_id"] = str(ObjectId())
