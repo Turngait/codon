@@ -33,7 +33,6 @@ export class AuthService {
       if (res.status == 200) {
         return res.json();
       } else {
-        console.log(res.status);
         return res.status;
       }
     });

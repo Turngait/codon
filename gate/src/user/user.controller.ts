@@ -8,7 +8,10 @@ export class UserController {
 
   @Post()
   async getUserInfo(@Headers() headers) {
-    return await this.userService.getUserInfo(headers.user_email);
+    return await this.userService.getUserInfo(
+      headers.user_email,
+      headers.user_id,
+    );
   }
 
   @Put()

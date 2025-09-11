@@ -18,7 +18,6 @@ export class AuthController {
   }
 
   @Post('signin')
-  @HttpCode(200)
   signIn(@Body() signInDTO: SignInDTO) {
     return this.authService.signIn(signInDTO.email, signInDTO.pass);
   }
