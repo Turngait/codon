@@ -1,9 +1,11 @@
 from pydantic import BaseModel
+from fastapi_sqlalchemy import db
 from typing import List
+
 from app import app
 from services.analysis_service import Analysis
 from services.analysis_groups_service import AnalysisGroups
-
+from models.test_model import Tests
 class AnalysisData(BaseModel):
   title: str
   volume: str
@@ -88,3 +90,9 @@ async def add_value_to_analysis(req: AddValueReq):
 async def update_value_to_analysis(req: EditValueReq):
    analysis = Analysis()
    return await analysis.update_value(req.model_dump())
+
+
+@app.post("/test")
+async def test():
+   tests = db.session.query(Tests).all()
+   return {'status': 5000, "msg": 'Server error', "data": tests}
