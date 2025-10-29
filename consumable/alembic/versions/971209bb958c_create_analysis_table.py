@@ -23,7 +23,7 @@ def upgrade() -> None:
         'analysis',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('title', sa.String(64), nullable=False),
-        sa.Column('user_id', sa.Integer, sa.ForeignKey("users.id")),
+        sa.Column('user_id', sa.Integer, nullable=False),
         sa.Column('group_id', sa.Integer, sa.ForeignKey("analysis_groups.id")),
         sa.Column('clinic_id', sa.Integer, sa.ForeignKey("clinics.id")),
         sa.Column('date', sa.DateTime(), nullable=False),

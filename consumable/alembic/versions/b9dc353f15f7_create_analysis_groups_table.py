@@ -23,7 +23,7 @@ def upgrade() -> None:
         'analysis_groups',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('title', sa.String(64), nullable=False),
-        sa.Column('user_id', sa.Integer, sa.ForeignKey("users.id")),
+        sa.Column('user_id', sa.Integer, nullable=False),
         sa.Column('description', sa.Text(), nullable=True),
         sa.Column('created_at', sa.DateTime(), nullable=False),
         sa.Column('updated_at', sa.DateTime(), nullable=False),

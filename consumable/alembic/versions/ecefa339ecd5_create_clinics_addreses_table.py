@@ -23,7 +23,7 @@ def upgrade() -> None:
         'clinics_addresses',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('title', sa.String(64), nullable=False),
-        sa.Column('user_id', sa.Integer, sa.ForeignKey("users.id")),
+        sa.Column('user_id', sa.Integer, nullable=False),
         sa.Column('address', sa.Text(), nullable=True),
         sa.Column('is_main', sa.Boolean(), nullable=True, default=False),
         sa.Column('created_at', sa.DateTime(), nullable=False),

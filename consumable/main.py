@@ -2,6 +2,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app import app
 import routes.analysis_routes
 import routes.analysis_groups_routes
+import routes.clinics_routes
 
 origins = [
     "http://localhost",

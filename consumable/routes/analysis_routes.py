@@ -4,7 +4,7 @@ from typing import List
 
 from app import app
 from services.analysis_service import Analysis
-from services.analysis_groups_service import AnalysisGroups
+from services.analysis_groups_service import AnalysisGroupsService
 from models.test_model import Tests
 class AnalysisData(BaseModel):
   title: str
@@ -67,7 +67,7 @@ async def add_user_info(add_analysis_req: AddAnalysis):
 @app.post("/analysis/user")
 async def get_analysis(req: GetAnalysis):
    analysis = Analysis()
-   analysis_groups = AnalysisGroups()
+   analysis_groups = AnalysisGroupsService()
    groups = await analysis_groups.get_analysis_groups_for_user(req.user_id)
    return await analysis.get_analysis_for_user_on_req(req.user_id, groups)
 

@@ -23,7 +23,7 @@ def upgrade() -> None:
         'analysis_values',
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('title', sa.String(64), nullable=False),
-        sa.Column('user_id', sa.Integer, sa.ForeignKey("users.id")),
+        sa.Column('user_id', sa.Integer, nullable=False),
         sa.Column('analysis_id', sa.Integer, sa.ForeignKey("analysis.id")),
         sa.Column('volume', sa.String(64), nullable=False),
         sa.Column('normal', sa.String(64), nullable=False),
