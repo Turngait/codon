@@ -1,26 +1,50 @@
-from datetime import datetime
+import datetime
 from bson import ObjectId
+from sqlalchemy.orm import Session
+
 from repositories.analysis_repo import AnalysisRepositories
+from models.analysis_model import AnalysisModel, ValuesModel
 
 
 class Analysis:
-  async def add_analysis(self, data):
-    analysis_repo = AnalysisRepositories(data["user_id"])
-    old_analysis = await analysis_repo.get_analysis_for_user()
+  async def add_analysis(self, data, db: Session):
+    new_analyse = self.compose_new_analysis(data)
+    db_analyse = AnalysisModel(
+       title=new_analyse["title"],
+       description=new_analyse["description"],
+       user_id=new_analyse["user_id"],
+       created_at=new_analyse["created_at"],
+       updated_at=new_analyse["updated_at"],
+       date=new_analyse["date"],
+       group_id=new_analyse["group_id"],
+       doctors=new_analyse["doctors"],
+       clinic_id=new_analyse["clinic_id"],
+       equipment=new_analyse["equipment"]
+    )
+
     
-    if old_analysis is None:
-      new_analysis = self.compose_new_analysis(data)
-      try:
-        await analysis_repo.insert_new_analysis(new_analysis)
-      except Exception as e:
+    try:
+      db.add(db_analyse)
+      db.commit()
+      db.refresh(db_analyse)
+      if len(data["values"]) >= 1:
+        for val in data["values"]:
+          db_values = ValuesModel(
+            title = val["title"],
+            description = val["description"],
+            volume = val["volume"],
+            normal = val["normal"],
+            user_id = new_analyse["user_id"],
+            analysis_id = db_analyse.id
+          )
+          db.add(db_values)
+          db.commit()
+          db.refresh(db_values)
+
+      return {'status': 200, "msg": 'Analysis was added'}
+    except Exception as e:
         print(e)
         return {'status': 5000, "msg": 'Server error'}
-    else:
-      print(old_analysis)
-      old_analysis['analysis'].append(self.compose_for_existing_analysis(data))
-      await analysis_repo.update_analysis_by_id(old_analysis["_id"], old_analysis)
-
-    return {'status': 200, "msg": 'Analysis was added'}
     
     
   async def get_analysis_for_user_on_req(self, user_id: str, groups):
@@ -38,31 +62,18 @@ class Analysis:
         return {'status': 5000, "msg": 'Server error'}
   
 
-  async def delete_analysis(self, _id: str, user_id: str):
-    is_changed = 0
-    analysis_repo = AnalysisRepositories(user_id)
+  async def delete_analysis(self, id: str, user_id: str, db: Session):
     try:
-        analysis = await analysis_repo.get_analysis_for_user()
-        if analysis is None:
-           return {'status': 4004, "msg": 'Analysis not found'}
-        for i, analyse in enumerate(analysis["analysis"], start=0):
-          
-          if str(analyse["_id"]) == _id:
-             analysis["analysis"].remove(analyse)
-             is_changed = 1
-             break
-          if analyse["values"] is not None and len(analyse["values"]):
-             for v, value in enumerate(analyse["values"], start=0):
-              if str(value["_id"]) == _id:
-                 analyse["values"].remove(value)
-                 is_changed = 1
-                 break
-        if is_changed == 1:
-          print(analysis["_id"])
-          await analysis_repo.update_analysis_by_id(analysis["_id"], analysis)
-          return {'status': 200, "msg": 'Analyse was deleted'}
+        analyse_for_del = self._get_analyse_by_user(id, user_id, db)
+
+        if analyse_for_del == None:
+           return {'status': 4004, "msg": 'Analyse not found'}
         else:
-           return {'status': 4004, "msg": 'Analysis not found'}
+          db.delete(analyse_for_del)
+          db.commit()
+
+          return {'status': 200, "msg": 'Analyse was deleted'}
+     
     except BaseException as err:
       print(err)
       return {'status': 5000, "msg": 'Server error'}
@@ -85,24 +96,25 @@ class Analysis:
       return {'status': 5000, "msg": 'Server error'}
 
 
-  async def add_value(self, data):
-      analysis_repo = AnalysisRepositories(data["user_id"])
-      is_find = 0
+  async def add_value(self, data, db: Session):
+      analysis = self._get_analyse_by_user(data['analysis_id'], data['user_id'], db)
+
       try:
-          analysis = await analysis_repo.get_analysis_for_user()
-          if analysis is None:
+        if analysis is None:
               return {'status': 4004, "msg": 'Analysis not found'}
-          for an in analysis['analysis']:
-              if an["_id"] == data["analysis_id"]:
-                  data["value"]["_id"] = str(ObjectId())
-                  an["values"].append(data["value"])
-                  is_find += 1
-                  break
-          if is_find:
-              await analysis_repo.update_analysis_by_id(analysis["_id"], analysis)
-              return {'status': 200, "msg": 'Value was added'}
-          else:
-              return {'status': 4004, "msg": 'Analysis not found'}
+        else:
+          db_values = ValuesModel(
+            title = data["title"],
+            description = data["description"],
+            volume = data["volume"],
+            normal = data["normal"],
+            user_id = data["user_id"],
+            analysis_id = data["analysis_id"]
+          )
+          db.add(db_values)
+          db.commit()
+          db.refresh(db_values)
+        return {'status': 200, "msg": 'Values was added'}
       except BaseException as err:
         print(err)
         return {'status': 5000, "msg": 'Server error'}
@@ -136,39 +148,42 @@ class Analysis:
         print(err)
         return {'status': 5000, "msg": 'Server error'}
 
+  async def delete_analysis_value(self, id: int, user_id: int, db: Session):
+     try:
+        value_for_del = self._get_value_by_user(id, user_id, db)
 
+        if value_for_del == None:
+           return {'status': 4004, "msg": 'Value not found'}
+        else:
+          db.delete(value_for_del)
+          db.commit()
+
+          return {'status': 200, "msg": 'Value was deleted'}
+     
+     except BaseException as err:
+        print(err)
+        return {'status': 5000, "msg": 'Server error'}
+
+  def _get_analyse_by_user(self, analyse_id: int, user_id: int, db: Session):
+    return db.query(AnalysisModel).filter(AnalysisModel.id == analyse_id and AnalysisModel.user_id == user_id).first()
+  
+  def _get_value_by_user(self, id: int, user_id: int, db: Session):
+    return db.query(ValuesModel).filter(ValuesModel.id == id and ValuesModel.user_id == user_id).first()
+  
   def compose_new_analysis(self, data):
-    for val in data['values']:
-      val["_id"] = str(ObjectId())
+    dt_now = datetime.datetime.now()
+    formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')
 
     return {
       "user_id": data['user_id'],
-      "analysis": [{
-        "_id": str(ObjectId()),
-        "date": data["date"],
-        "title": data["title"],
-        "values": data['values'],
-        "group_id": data['group_id'],
-        "doctors": data['doctors'],
-        "clinic": data['clinic'],
-        "description": data['description'],
-        "equipment": data['equipment'],
-        }],
-      "createdAt": datetime.today().strftime('%Y-%m-%d')
+      "date": data["date"],
+      "title": data["title"],
+      "group_id": data['group_id'],
+      "doctors": data['doctors'],
+      "clinic_id": data['clinic_id'],
+      "description": data['description'],
+      "equipment": data['equipment'],
+      "created_at": formatted_dt,
+      "updated_at": formatted_dt
     }
   
-
-  def compose_for_existing_analysis(self, data):
-      for val in data['values']:
-        val["_id"] = str(ObjectId())
-      return {
-        "_id": str(ObjectId()),
-        "date": data["date"],
-        "title": data["title"],
-        "values": data['values'],
-        "group_id": data['group_id'],
-        "doctors": data['doctors'],
-        "clinic": data['clinic'],
-        "description": data['description'],
-        "equipment": data['equipment'],
-    }

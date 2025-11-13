@@ -15,6 +15,7 @@ import {
   DeleteAnalysisGroupDTO,
   AddValueDTO,
   EditValueDTO,
+  DeleteAnalysisValueDTO,
 } from './analysis.dto';
 
 @Controller('analysis')
@@ -103,6 +104,17 @@ export class AnalysisController {
     return await this.analysisService.updateValueToAnalysis(
       headers.user_id,
       updateValueReq,
+    );
+  }
+
+  @Delete()
+  async deleteValue(
+    @Headers() headers,
+    @Body() deleteAnalysisDTO: DeleteAnalysisValueDTO,
+  ) {
+    return await this.analysisService.deleteAnalysisValue(
+      headers.user_id,
+      deleteAnalysisDTO.id,
     );
   }
 }

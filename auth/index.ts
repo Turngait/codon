@@ -1,4 +1,5 @@
 const express = require('express');
+
 import mongoose from 'mongoose';
 import 'dotenv/config'
 
@@ -7,6 +8,7 @@ import SignInRouter from './routers/signin';
 import GetUserInfo from './routers/getuserinfo';
 import { APP_CONFIG } from './config/app.config';
 import { MONGO_CONFIG } from './config/mongo.config';
+import { connectToDB, sequelize } from './db';
 
 
 const app = express();
@@ -22,8 +24,9 @@ app.use('/signup', SignUpRouter)
 app.use('/signin', SignInRouter)
 app.use('/getinfo', GetUserInfo)
 
-app.listen(APP_CONFIG.PORT, () => {
+app.listen(APP_CONFIG.PORT, async () => {
   console.log(`Server is running at https://localhost:${APP_CONFIG.PORT}`);
   // Add event for mongoose disconnect 
   mongoose.connect(MONGO_CONFIG.CONNECTION_STRING).then(() => console.log("Mongo connected")).catch(() => console.log("MongoDB error"));
+  await connectToDB(sequelize);
 });

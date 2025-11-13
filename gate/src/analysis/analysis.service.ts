@@ -149,4 +149,19 @@ export class AnalysisService {
     });
     return result;
   }
+
+  async deleteAnalysisValue(user_id: string, value_id: string) {
+    return await fetch(URI.CONS_URL + 'analysis/value', {
+      method: 'DELETE',
+      body: JSON.stringify({ user_id, value_id }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        console.log(res.status);
+        return res.status;
+      }
+    });
+  }
 }

@@ -19,6 +19,10 @@ export class DeleteAnalysisDTO {
   id: string;
 }
 
+export class DeleteAnalysisValueDTO {
+  id: string;
+}
+
 export class AnalysisGroupDTO {
   id?: string;
   title: string;
