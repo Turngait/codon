@@ -1,3 +1,6 @@
+import os
+
+
 db_config = {
-  'mysql': 'mysql://root:admin123@db/codon',
+  'mysql': os.environ['SQLLINK_CODON'],
 }

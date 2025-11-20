@@ -17,10 +17,10 @@ class DeleteAnalysisGroupReq(BaseModel):
    user_id: int
 
 class UpdateGroupReq(BaseModel):
-  id: str
+  id: int
   title: str
   description: str
-  user_id: str
+  user_id: int
 
 
 @app.post("/analysis_groups")
@@ -37,6 +37,6 @@ async def delete_analysis_group(del_group_req: DeleteAnalysisGroupReq, db: Sessi
 
 
 @app.put("/analysis_groups")
-async def update_analysis_group(update_group_req: UpdateGroupReq):
+async def update_analysis_group(update_group_req: UpdateGroupReq, db: Session = Depends(get_db)):
     analysis_groups = AnalysisGroupsService()
-    return await analysis_groups.update_group(update_group_req.model_dump())
+    return await analysis_groups.update_group(update_group_req.model_dump(), db)

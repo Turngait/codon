@@ -19,7 +19,12 @@ export class AuthService {
     ) {
       return statusFromAuthApi;
     }
-    await this.addUsersData(email, data, settings);
+    console.log(statusFromAuthApi);
+    await this.addUsersData(
+      statusFromAuthApi.data.user_id || 0,
+      data,
+      settings,
+    );
 
     return statusFromAuthApi;
   }
@@ -55,10 +60,10 @@ export class AuthService {
     return result;
   }
 
-  async addUsersData(email, data, settings) {
+  async addUsersData(user_id, data, settings) {
     const result = await fetch(URI.USERS_URL + 'user', {
       method: 'POST',
-      body: JSON.stringify({ email, data: data, settings: settings }),
+      body: JSON.stringify({ user_id, data: data, settings: settings }),
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => {
       if (res.status == 200) {

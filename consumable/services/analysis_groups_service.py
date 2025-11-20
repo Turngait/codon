@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 import datetime
-from bson import ObjectId
 
 from repositories.analysis_group_repo import AnalysisGroupRepositories
 from models.analysis_group_model import AnalysisGroupModel
@@ -8,7 +7,7 @@ from models.analysis_group_model import AnalysisGroupModel
 
 class AnalysisGroupsService:
   async def add_group(self, group, db: Session):
-    new_group = self.compose_new_group(group)
+    new_group = self.__compose_new_group(group)
     old_group = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.title == new_group['title'] and AnalysisGroupModel.user_id == new_group['user_id']).first()
     if old_group is None:
       try:
@@ -52,24 +51,23 @@ class AnalysisGroupsService:
       return {'status': 4004, "msg": 'Group does not exist'}
   
 
-  async def update_group(self, group):
-    is_changed = 0
-    group_repo = AnalysisGroupRepositories(group['user_id'])
+  async def update_group(self, new_group, db: Session):
     try:
-      old_group = await group_repo.get_group_by_id_for_user(ObjectId(group['id']))
-      if old_group is not None:
-        del group['id']
-        await group_repo.update_group_by_id(old_group["_id"], group)
+      group_for_update = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.id == new_group['id'] and AnalysisGroupModel.user_id == new_group['user_id']).first()
+      if group_for_update:
+        group_for_update.title = new_group['title']
+        group_for_update.description = new_group['description']
 
-        is_changed = 1
+        db.commit()
+
+        return {'status': 200, "msg": 'Group was updated'}
+      else:
+        return {'status': 4004, "msg": 'Group does not exist'}
     except Exception as e:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
-    if is_changed:
-      return {'status': 200, "msg": 'Group was updated'}
-    else: return {'status': 4004, "msg": 'Group not found'}
 
-  def compose_new_group(self, data):
+  def __compose_new_group(self, data):
     dt_now = datetime.datetime.now()
     formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')
     return {

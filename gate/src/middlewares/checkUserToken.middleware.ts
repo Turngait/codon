@@ -12,8 +12,7 @@ export class CheckUserTokenMiddleware implements NestMiddleware {
     const response = await this.getInfoFromAuthApi(req.headers.user_token);
     if (response && response.status === 200) {
       req.headers.user_email = response.data.userInfo.email;
-      const user_data = await this.getUserId(response.data.userInfo.email);
-      req.headers.user_id = user_data.data.user_id;
+      req.headers.user_id = response.data.userInfo.user_id;
       next();
     } else {
       res.json({ status: 403, msg: 'Wrong user token' });

@@ -4,10 +4,10 @@ import { dateNow } from "../utils/date";
 import { createPassword, createPaper, createToken } from "../utils/sec";
 
 export default class UserService {
-  async addUser(email: string, pass: string): Promise<{ token: string | null; err: number | null; }>{
+  async addUser(email: string, pass: string): Promise<{ token: string | null; user_id: number | null, err: number | null; }>{
     const oldUser = await this.getUserByEmail(email);
     
-    if (oldUser) return {token: null, err: 1};
+    if (oldUser) return {token: null, user_id: null, err: 1};
 
     const paper = createPaper();
     try {
@@ -20,35 +20,34 @@ export default class UserService {
       const new_user = await userDB.save();
 
       const token = createToken();
-      
+      const dt = new Date()
       await Tokens.create({
         user_id: new_user.id,
         token: token,
-        active_til: Date.now()
+        active_til: dt.setDate(dt.getDate() + 30)
       })
 
-      return {token: token, err: null};
+      return {token: token, user_id: new_user.id, err: null};
     } catch(err) {
       console.log(err);
-      return {token: null, err: 5000};
+      return {token: null, user_id: null, err: 5000};
     }
   }
 
   async signIn(email: string, pass: string): Promise<{ token: string | null; err: number | null; }> {
     try {
-      console.log(email)
       const user = await this.getUserByEmail(email);
-      console.log(user);
       
       if (!user) return {token: null, err: 4003};
       const userPass = createPassword(pass, user.paper);
 
       if (userPass === user.pass) {
         const token = createToken();
+        const dt = new Date()
         await Tokens.create({
           user_id: user.id,
           token: token,
-          active_til: Date.now()
+          active_til: dt.setDate(dt.getDate() + 30)
         })
 
         return {token, err: null};
@@ -62,11 +61,26 @@ export default class UserService {
     }
   }
 
+  async getUserInfoByToken(token: string): Promise<{ user_id: string| null; email: string| null; token: string | null; }> {
+    const token_data = await this.getToken(token);
+    if (token_data) {
+      const user_data = await this.getUserById(token_data.user_id);
+
+      return user_data ? {user_id: token_data.user_id, email: user_data.email, token} : {user_id: token_data.user_id, email: null, token};
+
+    }
+    else return {user_id: null, email: null, token};
+  }
+
   async getUserByEmail(email: string) {
-    return await User.findOne({where: {email}})
+    return await User.findOne({where: {email}});
   }
 
   async getToken(token: string): Promise<any> {
     return await Tokens.findOne({where: {token}});
+  }
+
+  async getUserById(id: string): Promise<any> {
+    return await User.findOne({where: {id}});
   }
 }

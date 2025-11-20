@@ -38,9 +38,10 @@ class ClinicsServices:
 
   async def delete_clinic(self, clinic_id, user_id, db: Session):
     is_changed = 0
-    
-    old_clinic = db.query(ClinicsModel).filter(ClinicsModel.id == clinic_id and ClinicsModel.user_id == user_id).first()
+
     try:
+      old_clinic = db.query(ClinicsModel).filter(ClinicsModel.id == clinic_id and ClinicsModel.user_id == user_id).first()
+    
       if old_clinic is not None:
         db.delete(old_clinic)
         db.commit()
@@ -54,6 +55,24 @@ class ClinicsServices:
     else:
       return {'status': 4004, "msg": 'Clinic does not exist'}
   
+  async def update_clinic(self, new_clinic_data, db: Session):
+    try:
+      clinic_for_update = db.query(ClinicsModel).filter(ClinicsModel.id == new_clinic_data['id'] and ClinicsModel.user_id == new_clinic_data['user_id']).first()
+      if clinic_for_update:
+        clinic_for_update.title = new_clinic_data['title']
+        clinic_for_update.description = new_clinic_data['description']
+        clinic_for_update.law_info = new_clinic_data['law_info']
+        clinic_for_update.main_site = new_clinic_data['main_site']
+
+        db.commit()
+
+        return {'status': 200, "msg": 'Clinic was updated'}
+      else:
+        return {'status': 4004, "msg": 'Clinic does not exist'}
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
+
   def compose_new_clinic(self, data):
     dt_now = datetime.datetime.now()
     formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')

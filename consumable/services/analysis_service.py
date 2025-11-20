@@ -1,5 +1,4 @@
 import datetime
-from bson import ObjectId
 from sqlalchemy.orm import Session
 
 from repositories.analysis_repo import AnalysisRepositories

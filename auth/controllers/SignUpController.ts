@@ -8,7 +8,7 @@ export default class SignUpController {
     const newUser = await user.addUser(req.body.email, req.body.pass);
     
     if (newUser && newUser.token) {
-      res.json({status: 200, msg: "user have created", data: {token: newUser.token}});
+      res.json({status: 200, msg: "user have created", data: {token: newUser.token, user_id: newUser.user_id}});
     }
     else if (newUser && newUser.err && newUser.err === 1) {
       res.json({status: 4013, msg: "user exist", data: {token: null}});

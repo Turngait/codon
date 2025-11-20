@@ -30,7 +30,9 @@ services:
       - 8081:5000
 
   cd-users:
-    build: .
+    build:
+      context: .
+      dockerfile: users.Dockerfile
     ports:
       - 8084:8000
     environment:
@@ -53,6 +55,8 @@ services:
       ENV: DEV
       PORT: 8000
       MONGOLINK: ${MONGODB}
+      SQLLINK_USERS_DATA: ${SQLLINK_USERS_DATA}
+      SQLLINK_CODON: ${SQLLINK_CODON}
     volumes:
       - ./consumable:/consumable
     restart: always
@@ -87,6 +91,22 @@ services:
   #   restart: always
   #   container_name: logger
 
+  # cd-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: worker.Dockerfile
+  #   environment:
+  #     ENV: DEV
+  #     PORT: 8000
+  #     SQLLINK_USERS_DATA: ${SQLLINK_USERS_DATA}
+  #     SQLLINK_CODON: ${SQLLINK_CODON}
+  #     SQLLINK_USERS: ${SQLLINK_USERS}
+  #     WORKER_SLEEP_TIME: ${WORKER_SLEEP_TIME}
+  #   volumes:
+  #     - ./worker:/worker
+  #   restart: always
+  #   container_name: cd-worker
+
   mongo:
     image: mongo
     restart: always
@@ -95,6 +115,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_NAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PWD}
+    container_name: cd-mongo-codon
 
   mongo-express:
     image: mongo-express
@@ -107,6 +128,7 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGO_ROOT_NAME}
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_ROOT_PWD}
       ME_CONFIG_MONGODB_URL: ${MONGOEXPRESSLINK}
+    container_name: cd-mongo-express
   db:
     image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
@@ -115,6 +137,7 @@ services:
       - ./db/mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    container_name: cd-db-codon
 
   db-users:
     image: mysql:latest
@@ -124,14 +147,16 @@ services:
       - ./db/mysql_users:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_USERS_ROOT_PASSWORD}
+    container_name: cd-db-users
 
-  myadmin:
+  myadmin-codon:
     image: phpmyadmin/phpmyadmin
     restart: always
     links: 
       - db
     ports:
       - 8086:80
+    container_name: cd-myadmin-codon
 
   myadmin_users:
     image: phpmyadmin/phpmyadmin
@@ -142,6 +167,7 @@ services:
       PMA_HOST: db-users
     ports:
       - 8087:80
+    container_name: cd-codon-users
   # rmq:
   #   image: rabbitmq:3-management
   #   restart: always
