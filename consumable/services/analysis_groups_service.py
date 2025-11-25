@@ -1,14 +1,13 @@
 from sqlalchemy.orm import Session
 import datetime
 
-from repositories.analysis_group_repo import AnalysisGroupRepositories
 from models.analysis_group_model import AnalysisGroupModel
 
 
 class AnalysisGroupsService:
   async def add_group(self, group, db: Session):
     new_group = self.__compose_new_group(group)
-    old_group = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.title == new_group['title'] and AnalysisGroupModel.user_id == new_group['user_id']).first()
+    old_group = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.title == new_group['title'], AnalysisGroupModel.user_id == new_group['user_id']).first()
     if old_group is None:
       try:
         db_group = AnalysisGroupModel(
@@ -28,14 +27,20 @@ class AnalysisGroupsService:
       return {'status': 4003, "msg": 'Group already exist'}
   
   # Add exceptions
-  async def get_analysis_groups_for_user(self, user_id: str):
-    group_repo = AnalysisGroupRepositories(user_id)
-    return await group_repo.get_group_for_user()
+  async def get_analysis_groups_for_user(self, user_id: str, db: Session):
+    try:
+      groups = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.user_id == user_id).all()
+
+      return {'status': 200, "msg": 'Analysis groups', "data": groups}
+
+    except Exception as err:
+      print(err)
+      return {'status': 5000, "msg": 'Server error'}
   
   async def delete_group(self, user_id: str, group_id: str, db: Session):
     is_changed = 0
     
-    old_group = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.id == group_id and AnalysisGroupModel.user_id == user_id).first()
+    old_group = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.id == group_id, AnalysisGroupModel.user_id == user_id).first()
     try:
       if old_group is not None:
         db.delete(old_group)
@@ -53,7 +58,7 @@ class AnalysisGroupsService:
 
   async def update_group(self, new_group, db: Session):
     try:
-      group_for_update = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.id == new_group['id'] and AnalysisGroupModel.user_id == new_group['user_id']).first()
+      group_for_update = db.query(AnalysisGroupModel).filter(AnalysisGroupModel.id == new_group['id'], AnalysisGroupModel.user_id == new_group['user_id']).first()
       if group_for_update:
         group_for_update.title = new_group['title']
         group_for_update.description = new_group['description']

@@ -34,13 +34,22 @@ class ClinicsServices:
       
     else:
       return {'status': 4003, "msg": 'Clinic already exist'}
+  
+  async def get_clinics_for_user_on_req(self, user_id: str, db: Session):
+    try:
+      clinics = db.query(ClinicsModel).filter(ClinicsModel.user_id == user_id).all()
+
+      return {'status': 200, "msg": 'Clinics', "data": clinics}
+    except Exception as e:
+        print(e)
+        return {'status': 5000, "msg": 'Server error'}
     
 
   async def delete_clinic(self, clinic_id, user_id, db: Session):
     is_changed = 0
 
     try:
-      old_clinic = db.query(ClinicsModel).filter(ClinicsModel.id == clinic_id and ClinicsModel.user_id == user_id).first()
+      old_clinic = db.query(ClinicsModel).filter(ClinicsModel.id == clinic_id, ClinicsModel.user_id == user_id).first()
     
       if old_clinic is not None:
         db.delete(old_clinic)
@@ -57,7 +66,7 @@ class ClinicsServices:
   
   async def update_clinic(self, new_clinic_data, db: Session):
     try:
-      clinic_for_update = db.query(ClinicsModel).filter(ClinicsModel.id == new_clinic_data['id'] and ClinicsModel.user_id == new_clinic_data['user_id']).first()
+      clinic_for_update = db.query(ClinicsModel).filter(ClinicsModel.id == new_clinic_data['id'], ClinicsModel.user_id == new_clinic_data['user_id']).first()
       if clinic_for_update:
         clinic_for_update.title = new_clinic_data['title']
         clinic_for_update.description = new_clinic_data['description']

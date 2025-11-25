@@ -1,7 +1,6 @@
 import datetime
 from sqlalchemy.orm import Session
 
-from repositories.analysis_repo import AnalysisRepositories
 from models.analysis_model import AnalysisModel, ValuesModel
 
 
@@ -46,15 +45,15 @@ class Analysis:
         return {'status': 5000, "msg": 'Server error'}
     
     
-  async def get_analysis_for_user_on_req(self, user_id: str, groups):
-    data = {}
-    analysis_repo = AnalysisRepositories(user_id)
-
+  async def get_analysis_for_user_on_req(self, user_id: str, db: Session):
     try:
-      analysis = await analysis_repo.get_analysis_for_user()
-      if analysis is not None:
-          data['analysis'] = analysis['analysis']
-          data['groups'] = groups
+      analysis = db.query(AnalysisModel).filter(AnalysisModel.user_id == user_id).all()
+      values = db.query(ValuesModel).filter(ValuesModel.user_id == user_id).all()
+      data = []
+      for an in analysis:
+         vals = [val for val in values if val.analysis_id == an.id]
+         data.append({"analysis": an, "values": vals})
+
       return {'status': 200, "msg": 'Analysis', "data": data}
     except Exception as e:
         print(e)
@@ -78,21 +77,25 @@ class Analysis:
       return {'status': 5000, "msg": 'Server error'}
 
 
-  async def edit_analysis(self, analysis):
-    analysis_repo = AnalysisRepositories(analysis["user_id"])
-    try:
-      old_analysis = await analysis_repo.get_analysis_for_user()
-      if old_analysis is None:
-        return {'status': 4004, "msg": 'Analysis not found'}
-      del analysis["user_id"]
-      old_analysis["analysis"] = analysis
-      await analysis_repo.update_analysis_by_id(old_analysis["_id"], old_analysis)
+  async def edit_analysis(self, analysis_data, db: Session):      
+      try:
+        analysis = self._get_analyse_by_user(analysis_data['id'], analysis_data['user_id'], db)
+        if analysis is None:
+            return {'status': 4004, "msg": 'Analysis not found'}
+        
+        analysis.title = analysis_data['title']
+        analysis.date = analysis_data['date']
+        analysis.group_id = analysis_data['group_id']
+        analysis.doctors = analysis_data['doctors']
+        analysis.clinic_id = analysis_data['clinic_id']
+        analysis.description = analysis_data['description']
 
-      return {'status': 200, "msg": 'Analyse was updated'}
-    
-    except BaseException as err:
-      print(err)
-      return {'status': 5000, "msg": 'Server error'}
+        db.commit()
+      
+        return {'status': 200, "msg": 'Analysis was updated'}
+      except BaseException as err:
+        print(err)
+        return {'status': 5000, "msg": 'Server error'}
 
 
   async def add_value(self, data, db: Session):
@@ -118,31 +121,20 @@ class Analysis:
         print(err)
         return {'status': 5000, "msg": 'Server error'}
 
-  async def update_value(self, data):
-      analysis_repo = AnalysisRepositories(data["user_id"])
-      is_find = 0
+  async def update_value(self, value_data, db: Session):
       try:
-          analysis = await analysis_repo.get_analysis_for_user()
-          if analysis is None:
-              return {'status': 4004, "msg": 'Analysis not found'}
+        value = self._get_value_by_user(value_data['id'], value_data['user_id'], db)
+        if value is None:
+            return {'status': 4004, "msg": 'Value not found'}
+        
+        value.title = value_data['title']
+        value.volume = value_data['volume']
+        value.normal = value_data['normal']
+        value.description = value_data['description']
 
-          for an in analysis['analysis']:
-              if an["_id"] == data["analysis_id"]:
-                  i = 0
-                  for val in an["values"]:
-                      if val["_id"] == data["value"]["id"]:
-                          data["value"]["_id"] = data["value"]["id"]
-                          del data["value"]["id"]
-                          an["values"][i] = data["value"]
-                          is_find += 1
-                          break
-                      i += 1
-
-          if is_find:
-              await analysis_repo.update_analysis_by_id(analysis["_id"], analysis)
-              return {'status': 200, "msg": 'Value was updated'}
-          else:
-              return {'status': 4004, "msg": 'Analysis not found'}
+        db.commit()
+      
+        return {'status': 200, "msg": 'Value was updated'}
       except BaseException as err:
         print(err)
         return {'status': 5000, "msg": 'Server error'}
@@ -164,10 +156,10 @@ class Analysis:
         return {'status': 5000, "msg": 'Server error'}
 
   def _get_analyse_by_user(self, analyse_id: int, user_id: int, db: Session):
-    return db.query(AnalysisModel).filter(AnalysisModel.id == analyse_id and AnalysisModel.user_id == user_id).first()
+    return db.query(AnalysisModel).filter(AnalysisModel.id == analyse_id, AnalysisModel.user_id == user_id).first()
   
   def _get_value_by_user(self, id: int, user_id: int, db: Session):
-    return db.query(ValuesModel).filter(ValuesModel.id == id and ValuesModel.user_id == user_id).first()
+    return db.query(ValuesModel).filter(ValuesModel.id == id, ValuesModel.user_id == user_id).first()
   
   def compose_new_analysis(self, data):
     dt_now = datetime.datetime.now()

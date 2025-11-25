@@ -1,3 +1,5 @@
+# Just for example. Does not use anywhere
+
 from app import db
 
 class AnalysisGroupRepositories:
