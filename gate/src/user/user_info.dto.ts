@@ -1,9 +1,7 @@
 export class UpdateUserDataDTO {
   user_token: string;
-  data: {
-    sex: string;
-    age: number;
-    weight: number;
-    height: number;
-  };
+  biological_gender: string;
+  data_birth: string;
+  weight: number;
+  height: number;
 }

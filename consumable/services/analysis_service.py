@@ -1,12 +1,12 @@
 import datetime
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
 
 from models.analysis_model import AnalysisModel, ValuesModel
 
 
 class Analysis:
   async def add_analysis(self, data, db: Session):
-    new_analyse = self.compose_new_analysis(data)
+    new_analyse = self._compose_new_analysis(data)
     db_analyse = AnalysisModel(
        title=new_analyse["title"],
        description=new_analyse["description"],
@@ -116,7 +116,8 @@ class Analysis:
           db.add(db_values)
           db.commit()
           db.refresh(db_values)
-        return {'status': 200, "msg": 'Values was added'}
+
+          return {'status': 200, "msg": 'Values was added'}
       except BaseException as err:
         print(err)
         return {'status': 5000, "msg": 'Server error'}
@@ -161,7 +162,7 @@ class Analysis:
   def _get_value_by_user(self, id: int, user_id: int, db: Session):
     return db.query(ValuesModel).filter(ValuesModel.id == id, ValuesModel.user_id == user_id).first()
   
-  def compose_new_analysis(self, data):
+  def _compose_new_analysis(self, data):
     dt_now = datetime.datetime.now()
     formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')
 

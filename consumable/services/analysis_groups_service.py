@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
 import datetime
 
 from models.analysis_group_model import AnalysisGroupModel

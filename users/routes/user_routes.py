@@ -1,6 +1,6 @@
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
-from fastapi import Depends
+from pydantic import BaseModel # pyright: ignore[reportMissingImports]
+from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
+from fastapi import Depends # pyright: ignore[reportMissingImports]
 
 from app import app
 from services.user_service import User
@@ -26,8 +26,11 @@ class UserGetInfo(BaseModel):
   user_id: int
 
 class UpdateUserData(BaseModel):
-  email: str
-  data: UserData
+  user_id: int
+  biological_gender: str
+  data_birth: str
+  weight: str
+  height: str
 
 
 @app.post("/user")
@@ -38,9 +41,9 @@ async def addUserInfo(user_info_req: UserInfoReq, db: Session = Depends(get_db))
 @app.post("/getdata")
 async def getUserInfo(user_info: UserGetInfo, db: Session = Depends(get_db)):
     user = User()
-    return await user.getUserData(user_info.email, db);
+    return await user.getUserData(user_info.user_id, db);
 
-@app.put("/updatedata")
-async def updateUserInfo(user_info: UpdateUserData):
+@app.put("/updateuserdata")
+async def updateUserInfo(user_info: UpdateUserData, db: Session = Depends(get_db)):
     user = User()
-    return await user.updateUserData(user_info);
+    return await user.updateUserData(user_info.model_dump(), db);

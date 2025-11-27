@@ -4,14 +4,14 @@ import URI from '../config/uri';
 
 @Injectable()
 export class UserService {
-  async getUserInfo(email: string, user_id: string): Promise<any> {
+  async getUserInfo(user_id: string): Promise<any> {
     let status = 200;
     const data = {
       user_data: null,
       analysis: null,
     };
     try {
-      const user_data = await this.getUserDataByEmail(email);
+      const user_data = await this.getUserDataById(user_id);
       const analysis = await this.getAnalysisForUser(user_id);
       if (
         user_data.status &&
@@ -30,10 +30,22 @@ export class UserService {
     return { status, data };
   }
 
-  async updateUserData(email, data): Promise<any> {
-    const result = await fetch(URI.USERS_URL + 'updatedata', {
+  async updateUserData(
+    user_id,
+    biological_gender,
+    data_birth,
+    weight,
+    height,
+  ): Promise<any> {
+    const result = await fetch(URI.USERS_URL + 'updateuserdata', {
       method: 'PUT',
-      body: JSON.stringify({ email, data }),
+      body: JSON.stringify({
+        user_id,
+        biological_gender,
+        data_birth,
+        weight,
+        height,
+      }),
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => {
       if (res.status == 200) {
@@ -47,16 +59,23 @@ export class UserService {
     return result;
   }
 
+  async changeTimeZone(user_id: number, newTimeZone: string) {
+    console.log(user_id);
+    console.log(newTimeZone);
+
+    return true;
+  }
+
   async getAllDataForUser(email: string) {
-    const data = await this.getUserDataByEmail(email);
+    const data = await this.getUserDataById(email);
 
     return data;
   }
 
-  async getUserDataByEmail(email) {
+  async getUserDataById(user_id) {
     return await fetch(URI.USERS_URL + 'getdata', {
       method: 'POST',
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ user_id }),
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => {
       if (res.status == 200) {

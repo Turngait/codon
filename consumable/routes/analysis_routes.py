@@ -1,8 +1,8 @@
 from typing import List
-from pydantic import BaseModel
-from fastapi_sqlalchemy import db
-from sqlalchemy.orm import Session
-from fastapi import Depends, Response
+from pydantic import BaseModel # pyright: ignore[reportMissingImports]
+from fastapi_sqlalchemy import db # pyright: ignore[reportMissingImports]
+from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
+from fastapi import Depends, Response # pyright: ignore[reportMissingImports]
 
 from app import app
 from database import get_db

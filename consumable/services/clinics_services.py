@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
 import datetime
 
 from models.clinics_model import ClinicsModel
@@ -6,8 +6,7 @@ from models.clinics_model import ClinicsModel
 
 class ClinicsServices:
   async def add_new_clinic(self, clinic, db: Session):
-    print(clinic)
-    new_clinic = self.compose_new_clinic(clinic)
+    new_clinic = self._compose_new_clinic(clinic)
     old_clinic = db.query(ClinicsModel).filter(ClinicsModel.title == clinic['title'] and ClinicsModel.user_id == clinic['user_id']).first()
     if old_clinic == None:
       try:
@@ -26,7 +25,6 @@ class ClinicsServices:
           db.add(db_clinic)
           db.commit()
           db.refresh(db_clinic)
-          print(db_clinic)
           return {'status': 200, "msg": 'Clinic was added', "data": {"group_id": db_clinic.id}}
       except Exception as e:
         print(e)
@@ -82,7 +80,7 @@ class ClinicsServices:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
 
-  def compose_new_clinic(self, data):
+  def _compose_new_clinic(self, data):
     dt_now = datetime.datetime.now()
     formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')
 
