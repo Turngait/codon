@@ -80,16 +80,18 @@ services:
     ports:
       - 8082:3000
   
-  # logger:
-  #   build: .
-  #   ports:
-  #     - "5000:5000"
-  #   environment:
-  #     ENV: DEV
-  #   volumes:
-  #     - ./logger:/logger
-  #   restart: always
-  #   container_name: logger
+  cd-logger:
+    build:
+      context: .
+      dockerfile: logger.Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      ENV: DEV
+    volumes:
+      - ./logger:/logger
+    restart: always
+    container_name: cd-logger
 
   # cd-worker:
   #   build:
