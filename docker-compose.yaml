@@ -108,6 +108,17 @@ services:
   #     - ./worker:/worker
   #   restart: always
   #   container_name: cd-worker
+  cd-notify:
+    image: "node:18"
+    container_name: cd-notify
+    working_dir: /home/node/app
+    restart: always
+    volumes:
+      - ./notify:/home/node/app
+    command: npm run dev
+    environment:
+      - EMAIL_KEY=${EMAIL_KEY}
+      - MAIL_URL=${MAIL_URL}
 
   mongo:
     image: mongo

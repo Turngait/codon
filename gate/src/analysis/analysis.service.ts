@@ -40,7 +40,7 @@ export class AnalysisService {
     });
   }
 
-  async deleteAnalysis(user_id: string, analysis_id: string) {
+  async deleteAnalysis(user_id: string, analysis_id: number) {
     return await fetch(URI.CONS_URL + 'analysis', {
       method: 'DELETE',
       body: JSON.stringify({ user_id, analysis_id }),
@@ -86,7 +86,7 @@ export class AnalysisService {
     return result;
   }
 
-  async delGroup(user_id: string, group_id: string) {
+  async delGroup(user_id: string, group_id: number) {
     const result = await fetch(URI.CONS_URL + 'analysis_groups', {
       method: 'DELETE',
       body: JSON.stringify({ user_id, group_id }),
@@ -150,7 +150,7 @@ export class AnalysisService {
     return result;
   }
 
-  async deleteAnalysisValue(user_id: string, value_id: string) {
+  async deleteAnalysisValue(user_id: string, value_id: number) {
     return await fetch(URI.CONS_URL + 'analysis/value', {
       method: 'DELETE',
       body: JSON.stringify({ user_id, value_id }),

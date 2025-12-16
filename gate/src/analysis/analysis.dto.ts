@@ -1,5 +1,5 @@
 export class AnalysisDTO {
-  id?: string;
+  id?: number;
   date: string;
   title: string;
   values: {
@@ -8,7 +8,7 @@ export class AnalysisDTO {
     normal: string;
     description: string;
   }[];
-  group_id: string;
+  group_id: number;
   doctors: string[];
   clinic: string;
   equipment: string;
@@ -16,11 +16,11 @@ export class AnalysisDTO {
 }
 
 export class DeleteAnalysisDTO {
-  id: string;
+  id: number;
 }
 
 export class DeleteAnalysisValueDTO {
-  id: string;
+  id: number;
 }
 
 export class AnalysisGroupDTO {
@@ -30,11 +30,11 @@ export class AnalysisGroupDTO {
 }
 
 export class DeleteAnalysisGroupDTO {
-  id: string;
+  id: number;
 }
 
 export class AddValueDTO {
-  analysis_id: string;
+  analysis_id: number;
   value: {
     title: string;
     volume: string;
