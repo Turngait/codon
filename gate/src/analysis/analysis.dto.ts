@@ -9,7 +9,7 @@ export class AnalysisDTO {
     description: string;
   }[];
   group_id: number;
-  doctors: string[];
+  doctors: string;
   clinic: string;
   equipment: string;
   description: string;
@@ -24,7 +24,7 @@ export class DeleteAnalysisValueDTO {
 }
 
 export class AnalysisGroupDTO {
-  id?: string;
+  id?: number;
   title: string;
   description: string;
 }

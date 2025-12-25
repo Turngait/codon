@@ -10,6 +10,8 @@ import {
 @Injectable()
 export class AnalysisService {
   async addAnalysis(user_id: string, analysis: AnalysisDTO) {
+    console.log(user_id);
+    console.log(analysis);
     const result = await fetch(URI.CONS_URL + 'analysis', {
       method: 'POST',
       body: JSON.stringify({ user_id, ...analysis }),

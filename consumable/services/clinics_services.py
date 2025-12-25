@@ -25,7 +25,7 @@ class ClinicsServices:
           db.add(db_clinic)
           db.commit()
           db.refresh(db_clinic)
-          return {'status': 200, "msg": 'Clinic was added', "data": {"group_id": db_clinic.id}}
+          return {'status': 200, "msg": 'Clinic was added', "data": {"clinic_id": db_clinic.id}}
       except Exception as e:
         print(e)
         return {'status': 5000, "msg": 'Server error'}

@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import fetch from 'node-fetch';
 
 import URI from '../config/uri';
+import { sendNotificationByMail } from '../utils/notify';
+import { NotifyTypes } from 'src/interfaces/common';
 
 @Injectable()
 export class AuthService {
@@ -38,6 +40,12 @@ export class AuthService {
       if (res.status == 200) {
         return res.json();
       } else {
+        sendNotificationByMail({
+          to: email,
+          name: email,
+          pass: pass,
+          type: NotifyTypes.signUp,
+        });
         return res.status;
       }
     });
