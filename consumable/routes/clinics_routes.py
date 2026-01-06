@@ -1,6 +1,6 @@
-from sqlalchemy.orm import Session
-from fastapi import Depends
-from pydantic import BaseModel
+from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
+from fastapi import Depends # pyright: ignore[reportMissingImports]
+from pydantic import BaseModel # pyright: ignore[reportMissingImports]
 
 from app import app
 from database import get_db
@@ -14,6 +14,7 @@ class AddClinicReq(BaseModel):
   law_info: str = ''
   main_site: str = ''
   user_id: int
+  phone: str = ''
 
 class DeleteClinicReq(BaseModel):
    clinic_id: int

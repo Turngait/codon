@@ -8,7 +8,7 @@ Create Date: 2025-10-23 11:16:15.889300
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
+import sqlalchemy as sa # pyright: ignore[reportMissingImports]
 
 
 # revision identifiers, used by Alembic.
@@ -24,6 +24,7 @@ def upgrade() -> None:
         sa.Column('id', sa.Integer, primary_key=True),
         sa.Column('title', sa.String(64), nullable=False),
         sa.Column('user_id', sa.Integer, nullable=False),
+        sa.Column('clinic_id', sa.Integer, nullable=False),
         sa.Column('address', sa.Text(), nullable=True),
         sa.Column('is_main', sa.Boolean(), nullable=True, default=False),
         sa.Column('created_at', sa.DateTime(), nullable=False),

@@ -12,19 +12,18 @@ from services.clinics_services import ClinicsServices
 from models.test_model import Tests
 
 
-class AddValueReq(BaseModel):
-   analysis_id: int
-   user_id: int
-   title: str
-   volume: str
-   normal: str
-   description: str
+
 
 class AddValueWithAnalysisReq(BaseModel):
    title: str
    volume: str
    normal: str
    description: str
+
+class AddValueReq(BaseModel):
+   analysis_id: int
+   values: List [AddValueWithAnalysisReq]
+   user_id: int
 
 class AddValueWithIdReq(BaseModel):
   id: str

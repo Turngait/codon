@@ -35,12 +35,14 @@ export class DeleteAnalysisGroupDTO {
 
 export class AddValueDTO {
   analysis_id: number;
-  value: {
-    title: string;
-    volume: string;
-    normal: string;
-    description: string;
-  };
+  values: [
+    {
+      title: string;
+      volume: string;
+      normal: string;
+      description: string;
+    },
+  ];
 }
 
 export class EditValueDTO {

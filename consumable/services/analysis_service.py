@@ -105,17 +105,18 @@ class Analysis:
         if analysis is None:
               return {'status': 4004, "msg": 'Analysis not found'}
         else:
-          db_values = ValuesModel(
-            title = data["title"],
-            description = data["description"],
-            volume = data["volume"],
-            normal = data["normal"],
-            user_id = data["user_id"],
-            analysis_id = data["analysis_id"]
-          )
-          db.add(db_values)
-          db.commit()
-          db.refresh(db_values)
+          # db_values = ValuesModel(
+          #   title = data["title"],
+          #   description = data["description"],
+          #   volume = data["volume"],
+          #   normal = data["normal"],
+          #   user_id = data["user_id"],
+          #   analysis_id = data["analysis_id"]
+          # )
+          # db.add(db_values)
+          # db.commit()
+          # db.refresh(db_values)
+          print(data)
 
           return {'status': 200, "msg": 'Values was added'}
       except BaseException as err:

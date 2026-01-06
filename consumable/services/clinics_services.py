@@ -1,13 +1,13 @@
 from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
 import datetime
 
-from models.clinics_model import ClinicsModel
+from models.clinics_model import ClinicsModel, ClinicPhoneModel
 
 
 class ClinicsServices:
   async def add_new_clinic(self, clinic, db: Session):
     new_clinic = self._compose_new_clinic(clinic)
-    old_clinic = db.query(ClinicsModel).filter(ClinicsModel.title == clinic['title'] and ClinicsModel.user_id == clinic['user_id']).first()
+    old_clinic = db.query(ClinicsModel).filter(ClinicsModel.title == clinic['title'], ClinicsModel.user_id == clinic['user_id']).first()
     if old_clinic == None:
       try:
         db_clinic = ClinicsModel(
@@ -25,6 +25,8 @@ class ClinicsServices:
           db.add(db_clinic)
           db.commit()
           db.refresh(db_clinic)
+          if len(new_clinic['phone']) > 0:
+            await self.add_clinic_phone({'title': 'Main phone', 'user_id': new_clinic['user_id'], 'clinic_id': db_clinic.id, 'phone_number': new_clinic['phone'], 'is_main': True}, db)
           return {'status': 200, "msg": 'Clinic was added', "data": {"clinic_id": db_clinic.id}}
       except Exception as e:
         print(e)
@@ -80,6 +82,29 @@ class ClinicsServices:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
 
+  async def add_clinic_phone(self, clinic_phone_data, db: Session):    
+    try:
+      if clinic_phone_data['is_main'] and clinic_phone_data['clinic_id']:
+        is_main_exist = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.is_main == 1, ClinicPhoneModel.user_id == clinic_phone_data['user_id'], ClinicPhoneModel.clinic_id == clinic_phone_data['clinic_id']).first()
+        if is_main_exist is not None:
+          return {'status': 4003, "msg": 'Main clinic phone is exist'}
+
+      db_clinic_phone = ClinicPhoneModel (
+        title = clinic_phone_data['title'],
+        user_id = clinic_phone_data['user_id'],
+        clinic_id = clinic_phone_data['clinic_id'],
+        phone_number = clinic_phone_data['phone_number'],
+        is_main = clinic_phone_data['is_main']
+      )
+
+      db.add(db_clinic_phone)
+      db.commit()
+      db.refresh(db_clinic_phone)
+      return {'status': 200, "msg": 'Clinic phone was added', "data": {"phone_id": db_clinic_phone.id}}
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
+  
   def _compose_new_clinic(self, data):
     dt_now = datetime.datetime.now()
     formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')
@@ -90,6 +115,7 @@ class ClinicsServices:
       "main_site": data["main_site"],
       "law_info": data["law_info"],
       "user_id": data["user_id"],
+      "phone": data["phone"],
       "created_at": formatted_dt,
       "updated_at": formatted_dt
     }
