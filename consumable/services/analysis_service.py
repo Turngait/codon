@@ -52,7 +52,8 @@ class Analysis:
       data = []
       for an in analysis:
          vals = [val for val in values if val.analysis_id == an.id]
-         data.append({"analysis": an, "values": vals})
+         an.values = vals
+         data.append(an)
 
       return {'status': 200, "msg": 'Analysis', "data": data}
     except Exception as e:
@@ -99,26 +100,36 @@ class Analysis:
 
 
   async def add_value(self, data, db: Session):
+      if len(data['values']) == 0:
+         return {'status': 4001, "msg": 'There are 0 values in request'}
       analysis = self._get_analyse_by_user(data['analysis_id'], data['user_id'], db)
-
+      new_values = []
       try:
         if analysis is None:
               return {'status': 4004, "msg": 'Analysis not found'}
         else:
-          # db_values = ValuesModel(
-          #   title = data["title"],
-          #   description = data["description"],
-          #   volume = data["volume"],
-          #   normal = data["normal"],
-          #   user_id = data["user_id"],
-          #   analysis_id = data["analysis_id"]
-          # )
-          # db.add(db_values)
-          # db.commit()
-          # db.refresh(db_values)
-          print(data)
+          for val in data['values']:
+            
+            db_values = ValuesModel(
+              title = val["title"],
+              description = val["description"],
+              volume = val["volume"],
+              normal = val["normal"],
+              user_id = data["user_id"],
+              analysis_id = data["analysis_id"]
+            )
+            db.add(db_values)
+            db.commit()
+            db.refresh(db_values)
+            new_values.append({
+              "title": val["title"],
+              "description": val["description"],
+              "volume": val["volume"],
+              "normal": val["normal"],
+              "id": db_values.id
+            })
 
-          return {'status': 200, "msg": 'Values was added'}
+          return {'status': 200, "msg": 'Values was added', "data": new_values}
       except BaseException as err:
         print(err)
         return {'status': 5000, "msg": 'Server error'}

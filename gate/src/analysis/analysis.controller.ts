@@ -107,7 +107,7 @@ export class AnalysisController {
     );
   }
 
-  @Delete()
+  @Delete('/value')
   async deleteValue(
     @Headers() headers,
     @Body() deleteAnalysisDTO: DeleteAnalysisValueDTO,
