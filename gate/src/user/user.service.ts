@@ -101,4 +101,20 @@ export class UserService {
       }
     });
   }
+
+  async changePassword(oldPass: string, newPass: string) {
+    const result = await fetch(URI.AUTH_URL + 'changePassword', {
+      method: 'PUT',
+      body: JSON.stringify({ oldPass, newPass }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        console.log(res.status);
+        return res.status;
+      }
+    });
+    return result;
+  }
 }
