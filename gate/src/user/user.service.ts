@@ -102,10 +102,10 @@ export class UserService {
     });
   }
 
-  async changePassword(oldPass: string, newPass: string) {
+  async changePassword(user_id: number, oldPass: string, newPass: string) {
     const result = await fetch(URI.AUTH_URL + 'changePassword', {
       method: 'PUT',
-      body: JSON.stringify({ oldPass, newPass }),
+      body: JSON.stringify({ user_id, oldPass, newPass }),
       headers: { 'Content-Type': 'application/json' },
     }).then((res) => {
       if (res.status == 200) {

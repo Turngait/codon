@@ -5,7 +5,9 @@ import 'dotenv/config'
 
 import SignUpRouter from './routers/signup';
 import SignInRouter from './routers/signin';
-import GetUserInfo from './routers/getuserinfo';
+import GetUserInfoRouter from './routers/getuserinfo';
+import ChangePassRouter from './routers/changePass';
+
 import { APP_CONFIG } from './config/app.config';
 import { MONGO_CONFIG } from './config/mongo.config';
 import { connectToDB, sequelize } from './db';
@@ -22,7 +24,8 @@ app.use(express.json({
 
 app.use('/signup', SignUpRouter)
 app.use('/signin', SignInRouter)
-app.use('/getinfo', GetUserInfo)
+app.use('/getinfo', GetUserInfoRouter)
+app.use('/changePassword', ChangePassRouter)
 
 app.listen(APP_CONFIG.PORT, async () => {
   console.log(`Server is running at https://localhost:${APP_CONFIG.PORT}`);

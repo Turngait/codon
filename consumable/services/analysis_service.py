@@ -39,10 +39,10 @@ class Analysis:
           db.commit()
           db.refresh(db_values)
 
-      return {'status': 200, "msg": 'Analysis was added'}
+      return {'status': 200, "msg": 'Analysis was added', "data": {"id": db_analyse.id}}
     except Exception as e:
         print(e)
-        return {'status': 5000, "msg": 'Server error'}
+        return {'status': 5000, "msg": 'Server error', "data":None}
     
     
   async def get_analysis_for_user_on_req(self, user_id: str, db: Session):
@@ -102,12 +102,12 @@ class Analysis:
   async def add_value(self, data, db: Session):
       if len(data['values']) == 0:
          return {'status': 4001, "msg": 'There are 0 values in request'}
-      analysis = self._get_analyse_by_user(data['analysis_id'], data['user_id'], db)
-      new_values = []
       try:
+        analysis = self._get_analyse_by_user(data['analysis_id'], data['user_id'], db)
         if analysis is None:
               return {'status': 4004, "msg": 'Analysis not found'}
         else:
+          new_values = []
           for val in data['values']:
             
             db_values = ValuesModel(

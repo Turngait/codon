@@ -72,6 +72,19 @@ export default class UserService {
     else return {user_id: null, email: null, token};
   }
 
+  async changeUserPass(user_id: number, oldPass: string, newPass: string): Promise<{ isChanged: boolean | null; err: number | null; }> {
+    const user_data = await this.getUserById(user_id);
+    let userPassHash = createPassword(oldPass, user_data.paper);
+    if (userPassHash === user_data.pass) {
+      userPassHash = createPassword(newPass, user_data.paper);
+      user_data.pass = userPassHash
+      await user_data.save()
+      return {isChanged: true, err: null};
+    }
+
+    return {isChanged: false, err: 4003};
+  }
+
   async getUserByEmail(email: string) {
     return await User.findOne({where: {email}});
   }
@@ -80,7 +93,7 @@ export default class UserService {
     return await Tokens.findOne({where: {token}});
   }
 
-  async getUserById(id: string): Promise<any> {
+  async getUserById(id: number): Promise<any> {
     return await User.findOne({where: {id}});
   }
 }

@@ -31,8 +31,12 @@ export class UserController {
     return await this.userService.changeTimeZone(headers.user_id, userTimeZone);
   }
   @Put('change-password')
-  changePassword(@Body() changePassword: ChangePasswordDTO) {
+  changePassword(
+    @Body() changePassword: ChangePasswordDTO,
+    @Headers() headers,
+  ) {
     return this.userService.changePassword(
+      headers.user_id,
       changePassword.oldPass,
       changePassword.newPass,
     );
