@@ -38,8 +38,17 @@ class ClinicsServices:
   async def get_clinics_for_user_on_req(self, user_id: str, db: Session):
     try:
       clinics = db.query(ClinicsModel).filter(ClinicsModel.user_id == user_id).all()
+      clinics_phones = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.user_id == user_id).all()
+      data = []
+      for clinic in clinics:
+        data.append({
+          'id': clinic.id,
+          'main': clinic,
+          'phones': [phone for phone in clinics_phones if phone.clinic_id == clinic.id],
+          'addresses': []
+        })
 
-      return {'status': 200, "msg": 'Clinics', "data": clinics}
+      return {'status': 200, "msg": 'Clinics', "data": data}
     except Exception as e:
         print(e)
         return {'status': 5000, "msg": 'Server error'}
