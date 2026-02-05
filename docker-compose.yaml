@@ -57,6 +57,7 @@ services:
       MONGOLINK: ${MONGODB}
       SQLLINK_USERS_DATA: ${SQLLINK_USERS_DATA}
       SQLLINK_CODON: ${SQLLINK_CODON}
+      SQLLINK_CODON_HEALTH: ${SQLLINK_CODON_HEALTH}
     volumes:
       - ./consumable:/consumable
     restart: always
