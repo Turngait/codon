@@ -16,8 +16,18 @@ class AddClinicReq(BaseModel):
   user_id: int
   phone: str = ''
 
+class AddClinicPhoneReq(BaseModel):
+  title: str
+  clinic_id: int
+  phone_number: str
+  is_main: bool
+
 class DeleteClinicReq(BaseModel):
    clinic_id: int
+   user_id: int
+
+class DeleteClinicPhoneReq(BaseModel):
+   id: int
    user_id: int
 
 class UpdateClinicReq(BaseModel):
@@ -34,11 +44,22 @@ async def add_clinic(add_clinic_req: AddClinicReq, db: Session = Depends(get_db)
     clinics_service = ClinicsServices()
     return await clinics_service.add_new_clinic(add_clinic_req.model_dump(), db)
 
+@app.post("/clinic/phone")
+async def add_clinic_phone_api(add_clinic_phone_req: AddClinicPhoneReq, db: Session = Depends(get_db)):
+    clinics_service = ClinicsServices()
+    return await clinics_service.add_clinic_phone(add_clinic_phone_req.model_dump(), db)
+
 @app.delete("/clinic")
 async def delete_clinic(del_clinic_req: DeleteClinicReq, db: Session = Depends(get_db)):
     clinics_service = ClinicsServices()
     data = del_clinic_req.model_dump()
     return await clinics_service.delete_clinic(data['clinic_id'], data['user_id'], db)
+
+@app.delete("/clinic/phone")
+async def delete_clinic_phone(del_clinic_phone_req: DeleteClinicPhoneReq, db: Session = Depends(get_db)):
+    clinics_service = ClinicsServices()
+    data = del_clinic_phone_req.model_dump()
+    return await clinics_service.delete_clinic_phone(data['clinic_id'], data['user_id'], db)
 
 @app.put('/clinic')
 async def update_clinic(update_clinic_req: UpdateClinicReq, db: Session = Depends(get_db)):

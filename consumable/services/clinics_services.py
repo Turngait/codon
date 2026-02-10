@@ -35,7 +35,7 @@ class ClinicsServices:
     else:
       return {'status': 4003, "msg": 'Clinic already exist'}
   
-  async def get_clinics_for_user_on_req(self, user_id: str, db: Session):
+  async def get_clinics_for_user_on_req(self, user_id: int, db: Session):
     try:
       clinics = db.query(ClinicsModel).filter(ClinicsModel.user_id == user_id).all()
       clinics_phones = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.user_id == user_id).all()
@@ -54,14 +54,16 @@ class ClinicsServices:
         return {'status': 5000, "msg": 'Server error'}
     
 
-  async def delete_clinic(self, clinic_id, user_id, db: Session):
+  async def delete_clinic(self, clinic_id: int, user_id: int, db: Session):
     is_changed = 0
 
     try:
-      old_clinic = db.query(ClinicsModel).filter(ClinicsModel.id == clinic_id, ClinicsModel.user_id == user_id).first()
+      clinic = db.query(ClinicsModel).filter(ClinicsModel.id == clinic_id, ClinicsModel.user_id == user_id).first()
     
-      if old_clinic is not None:
-        db.delete(old_clinic)
+      if clinic is not None:
+        db.delete(clinic)
+        stmt = ClinicPhoneModel.__table__.delete().where(ClinicPhoneModel.clinic_id == clinic_id)
+        db.execute(stmt)
         db.commit()
         is_changed = 1
     except Exception as e:
@@ -113,6 +115,25 @@ class ClinicsServices:
     except Exception as e:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
+    
+  async def delete_clinic_phone(self, id: int, user_id: int, db: Session):
+    is_changed = 0
+
+    try:
+      clinic_phone = db.query(ClinicsModel).filter(ClinicPhoneModel.id == id, ClinicPhoneModel.user_id == user_id).first()
+    
+      if clinic_phone is not None:
+        db.delete(clinic_phone)
+        db.commit()
+        is_changed = 1
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
+
+    if is_changed:
+      return {'status': 200, "msg": 'Clinic phone was deleted'}
+    else:
+      return {'status': 4004, "msg": 'Clinic phone does not exist'}
   
   def _compose_new_clinic(self, data):
     dt_now = datetime.datetime.now()

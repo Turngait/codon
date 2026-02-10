@@ -1,6 +1,11 @@
 import { Controller, Post, Headers, Body, Delete } from '@nestjs/common';
 import { ClinicsService } from './clinics.service';
-import { ClinicDTO, DeleteClinicDTO } from './clinics.dto';
+import {
+  ClinicDTO,
+  DeleteClinicDTO,
+  AddClinicPhoneDTO,
+  DeleteClinicPhoneDTO,
+} from './clinics.dto';
 
 @Controller('clinics')
 export class ClinicsController {
@@ -9,6 +14,28 @@ export class ClinicsController {
   @Post()
   async addClinic(@Body() addClinicDto: ClinicDTO, @Headers() headers) {
     return await this.clinicsService.addClinic(headers.user_id, addClinicDto);
+  }
+
+  @Post('/phone')
+  async addClinicPhone(
+    @Body() addClinicPhoneDto: AddClinicPhoneDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.addClinicPhone(
+      headers.user_id,
+      addClinicPhoneDto,
+    );
+  }
+
+  @Delete('/phone')
+  async deleteClinicPhone(
+    @Body() delClinicPhoneDto: DeleteClinicPhoneDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.deleteClinicPhone(
+      headers.user_id,
+      delClinicPhoneDto.id,
+    );
   }
 
   @Delete()
