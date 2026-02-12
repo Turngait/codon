@@ -14,10 +14,21 @@ export class AddClinicPhoneDTO {
   is_main: boolean;
 }
 
+export class AddClinicAddressDTO {
+  title: string;
+  clinic_id: number;
+  address: string;
+  is_main: boolean;
+}
+
 export class DeleteClinicDTO {
   id: number;
 }
 
 export class DeleteClinicPhoneDTO {
+  id: number;
+}
+
+export class DeleteClinicAddressDTO {
   id: number;
 }

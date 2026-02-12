@@ -5,6 +5,7 @@ import {
   DeleteClinicDTO,
   AddClinicPhoneDTO,
   DeleteClinicPhoneDTO,
+  AddClinicAddressDTO,
 } from './clinics.dto';
 
 @Controller('clinics')
@@ -24,6 +25,17 @@ export class ClinicsController {
     return await this.clinicsService.addClinicPhone(
       headers.user_id,
       addClinicPhoneDto,
+    );
+  }
+
+  @Post('/address')
+  async addClinicAddress(
+    @Body() addClinicAddressDto: AddClinicAddressDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.addClinicAddress(
+      headers.user_id,
+      addClinicAddressDto,
     );
   }
 

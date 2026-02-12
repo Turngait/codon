@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session # pyright: ignore[reportMissingImports]
 import datetime
 
-from models.clinics_model import ClinicsModel, ClinicPhoneModel
+from models.clinics_model import ClinicsModel, ClinicPhoneModel, ClinicAddressModel
 
 
 class ClinicsServices:
@@ -39,13 +39,14 @@ class ClinicsServices:
     try:
       clinics = db.query(ClinicsModel).filter(ClinicsModel.user_id == user_id).all()
       clinics_phones = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.user_id == user_id).all()
+      clinics_address = db.query(ClinicAddressModel).filter(ClinicAddressModel.user_id == user_id).all()
       data = []
       for clinic in clinics:
         data.append({
           'id': clinic.id,
           'main': clinic,
           'phones': [phone for phone in clinics_phones if phone.clinic_id == clinic.id],
-          'addresses': []
+          'addresses': [address for address in clinics_address if address.clinic_id == clinic.id]
         })
 
       return {'status': 200, "msg": 'Clinics', "data": data}
@@ -112,6 +113,32 @@ class ClinicsServices:
       db.commit()
       db.refresh(db_clinic_phone)
       return {'status': 200, "msg": 'Clinic phone was added', "data": {"phone_id": db_clinic_phone.id}}
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
+    
+
+  async def add_clinic_address(self, clinic_address_data, db: Session):
+    print(clinic_address_data)
+    try:
+      if clinic_address_data['is_main'] and clinic_address_data['clinic_id']:
+        is_main_exist = db.query(ClinicAddressModel).filter(ClinicAddressModel.is_main == 1, ClinicAddressModel.user_id == clinic_address_data['user_id'], ClinicAddressModel.clinic_id == clinic_address_data['clinic_id']).first()
+        if is_main_exist is not None:
+          return {'status': 4003, "msg": 'Main clinic address is exist'}
+      print('here1')
+      db_clinic_address = ClinicAddressModel (
+        title = clinic_address_data['title'],
+        user_id = clinic_address_data['user_id'],
+        clinic_id = clinic_address_data['clinic_id'],
+        address = clinic_address_data['address'],
+        is_main = clinic_address_data['is_main']
+      )
+      print('here2')
+
+      db.add(db_clinic_address)
+      db.commit()
+      db.refresh(db_clinic_address)
+      return {'status': 200, "msg": 'Clinic address was added', "data": {"address_id": db_clinic_address.id}}
     except Exception as e:
       print(e)
       return {'status': 5000, "msg": 'Server error'}

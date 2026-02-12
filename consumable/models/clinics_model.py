@@ -33,3 +33,18 @@ class ClinicPhoneModel(Base):
 
   def __repr__(self):
     return '<Clinic phone entity id = %r , title = %s>' % (self.id, self.title)
+  
+
+class ClinicAddressModel(Base):
+  __tablename__ = 'clinics_addresses'
+  id: Mapped[int] = mapped_column(primary_key=True)
+  title: Mapped[str] = mapped_column(String(length=150), nullable=False)
+  user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+  clinic_id: Mapped[int] = mapped_column(Integer, nullable=False)
+  address: Mapped[str] = mapped_column(String(length=64), nullable=True)
+  is_main: Mapped[bool] = mapped_column(Boolean, nullable=True)
+  created_at: Mapped[str] = mapped_column(DateTime, default=datetime.utcnow)
+  updated_at: Mapped[str] = mapped_column(DateTime, default=datetime.utcnow)
+
+  def __repr__(self):
+    return '<Clinic address entity id = %r , title = %s>' % (self.id, self.title)
