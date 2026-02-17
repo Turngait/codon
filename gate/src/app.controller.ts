@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post, Headers } from '@nestjs/common';
 import { AppService } from './app.service';
 
 @Controller({
@@ -10,5 +10,10 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Post()
+  getAllInfoForUser(@Headers() headers) {
+    return this.appService.getAllInfoForUser(headers.user_id);
   }
 }

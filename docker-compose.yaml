@@ -45,10 +45,10 @@ services:
     restart: always
     container_name: cd-users
 
-  cd-consumable:
+  cd-homeostasis:
     build:
       context: .
-      dockerfile: consumable.Dockerfile
+      dockerfile: homeostasis.Dockerfile
     ports:
       - 8085:8000
     environment:
@@ -59,9 +59,9 @@ services:
       SQLLINK_CODON: ${SQLLINK_CODON}
       SQLLINK_CODON_HEALTH: ${SQLLINK_CODON_HEALTH}
     volumes:
-      - ./consumable:/consumable
+      - ./homeostasis:/homeostasis
     restart: always
-    container_name: cd-consumable
+    container_name: cd-homeostasis
   
   cd-auth:
     image: "node:22"

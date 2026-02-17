@@ -25,9 +25,9 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(CheckTokenMiddleware)
-      .forRoutes('auth', 'user', 'analysis', 'clinics');
+      .forRoutes('/', 'auth', 'user', 'analysis', 'clinics');
     consumer
       .apply(CheckUserTokenMiddleware)
-      .forRoutes('analysis', 'user', 'clinics');
+      .forRoutes('/', 'analysis', 'user', 'clinics');
   }
 }

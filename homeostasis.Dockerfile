@@ -7,7 +7,7 @@ RUN pip install requests uvicorn motor pydantic
 RUN pip install fastapi-sqlalchemy
 RUN pip install mysqlclient
 RUN pip install alembic
-WORKDIR /consumable
-COPY consumable /consumable
+WORKDIR /homeostasis
+COPY homeostasis /homeostasis
 
 CMD ["fastapi", "run", "main.py", "--port", "8000", "--reload"]

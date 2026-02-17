@@ -7,6 +7,7 @@ import { ChangePasswordDTO } from './change-pass.dto';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  // TODO Deprecated, delete later
   @Post()
   async getUserInfo(@Headers() headers) {
     return await this.userService.getUserInfo(headers.user_id);
