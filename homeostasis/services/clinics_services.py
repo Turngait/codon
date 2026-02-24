@@ -116,29 +116,25 @@ class ClinicsServices:
     except Exception as e:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
-    
 
-  async def add_clinic_address(self, clinic_address_data, db: Session):
-    print(clinic_address_data)
+  async def update_clinic_phone(self, new_clinic_phone, db: Session):
     try:
-      if clinic_address_data['is_main'] and clinic_address_data['clinic_id']:
-        is_main_exist = db.query(ClinicAddressModel).filter(ClinicAddressModel.is_main == 1, ClinicAddressModel.user_id == clinic_address_data['user_id'], ClinicAddressModel.clinic_id == clinic_address_data['clinic_id']).first()
+      if new_clinic_phone['is_main']:
+        is_main_exist = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.is_main == 1, ClinicPhoneModel.id == new_clinic_phone['id']).first()
         if is_main_exist is not None:
-          return {'status': 4003, "msg": 'Main clinic address is exist'}
-      print('here1')
-      db_clinic_address = ClinicAddressModel (
-        title = clinic_address_data['title'],
-        user_id = clinic_address_data['user_id'],
-        clinic_id = clinic_address_data['clinic_id'],
-        address = clinic_address_data['address'],
-        is_main = clinic_address_data['is_main']
-      )
-      print('here2')
+          return {'status': 4003, "msg": 'Main clinic phone is exist'}
 
-      db.add(db_clinic_address)
-      db.commit()
-      db.refresh(db_clinic_address)
-      return {'status': 200, "msg": 'Clinic address was added', "data": {"address_id": db_clinic_address.id}}
+      clinic_phone_for_update = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.id == new_clinic_phone['id'], ClinicPhoneModel.user_id == new_clinic_phone['user_id']).first()
+      if clinic_phone_for_update:
+        clinic_phone_for_update.title = new_clinic_phone['title']
+        clinic_phone_for_update.phone_number = new_clinic_phone['phone_number']
+        clinic_phone_for_update.is_main = new_clinic_phone['is_main']
+
+        db.commit()
+
+        return {'status': 200, "msg": 'Clinic phone was updated'}
+      else:
+        return {'status': 4004, "msg": 'Clinic phone does not exist'}
     except Exception as e:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
@@ -147,12 +143,13 @@ class ClinicsServices:
     is_changed = 0
 
     try:
-      clinic_phone = db.query(ClinicsModel).filter(ClinicPhoneModel.id == id, ClinicPhoneModel.user_id == user_id).first()
+      clinic_phone = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.id == id, ClinicPhoneModel.user_id == user_id).first()
     
       if clinic_phone is not None:
         db.delete(clinic_phone)
         db.commit()
         is_changed = 1
+
     except Exception as e:
       print(e)
       return {'status': 5000, "msg": 'Server error'}
@@ -161,7 +158,67 @@ class ClinicsServices:
       return {'status': 200, "msg": 'Clinic phone was deleted'}
     else:
       return {'status': 4004, "msg": 'Clinic phone does not exist'}
+    
+
+  async def add_clinic_address(self, clinic_address_data, db: Session):
+    try:
+      if clinic_address_data['is_main'] and clinic_address_data['clinic_id']:
+        is_main_exist = db.query(ClinicAddressModel).filter(ClinicAddressModel.is_main == 1, ClinicAddressModel.user_id == clinic_address_data['user_id'], ClinicAddressModel.clinic_id == clinic_address_data['clinic_id']).first()
+        if is_main_exist is not None:
+          return {'status': 4003, "msg": 'Main clinic address is exist'}
+      db_clinic_address = ClinicAddressModel (
+        title = clinic_address_data['title'],
+        user_id = clinic_address_data['user_id'],
+        clinic_id = clinic_address_data['clinic_id'],
+        address = clinic_address_data['address'],
+        is_main = clinic_address_data['is_main']
+      )
+
+      db.add(db_clinic_address)
+      db.commit()
+      db.refresh(db_clinic_address)
+      return {'status': 200, "msg": 'Clinic address was added', "data": {"address_id": db_clinic_address.id}}
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
   
+  async def update_clinic_address(self, new_clinic_address, db: Session):
+    try:
+      if new_clinic_address['is_main']:
+        is_main_exist = db.query(ClinicAddressModel).filter(ClinicAddressModel.is_main == 1, ClinicAddressModel.id == new_clinic_address['id']).first()
+        if is_main_exist is not None:
+          return {'status': 4003, "msg": 'Main clinic address is exist'}
+
+      clinic_adr_for_update = db.query(ClinicAddressModel).filter(ClinicAddressModel.id == new_clinic_address['id'], ClinicAddressModel.user_id == new_clinic_address['user_id']).first()
+      if clinic_adr_for_update:
+        clinic_adr_for_update.title = new_clinic_address['title']
+        clinic_adr_for_update.address = new_clinic_address['address']
+        clinic_adr_for_update.is_main = new_clinic_address['is_main']
+
+        db.commit()
+
+        return {'status': 200, "msg": 'Clinic address was updated'}
+      else:
+        return {'status': 4004, "msg": 'Clinic address does not exist'}
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
+
+    
+  async def delete_clinic_address(self, id: int, user_id: int, db: Session):
+    try:
+      clinic_address = db.query(ClinicAddressModel).filter(ClinicAddressModel.id == id, ClinicAddressModel.user_id == user_id).first()
+      if clinic_address is not None:
+        db.delete(clinic_address)
+        db.commit()
+        return {'status': 200, "msg": 'Clinic address was deleted'}
+      else:
+        return {'status': 4004, "msg": 'Clinic address does not exist'}
+    except Exception as e:
+      print(e)
+      return {'status': 5000, "msg": 'Server error'}
+    
+
   def _compose_new_clinic(self, data):
     dt_now = datetime.datetime.now()
     formatted_dt = dt_now.strftime('%Y-%m-%d %H:%M:%S')

@@ -18,4 +18,21 @@ export default class AuthDataController {
         return res.json({status: 5000, msg: "server error", data: null});
       }
     }
+
+    static async updateEmail(req: Request, res: Response) {
+      const user = new UserService();
+      try {
+        const user_info = await user.updateEmail(req.body.user_id, req.body.email);
+        if (user_info.isChanged) {
+          return res.json({status: 200, msg: "email is changed", data: null});
+        } else if(user_info.err === 4004) {
+          return res.json({status: 4004, msg: "user does not exist", data: null});
+        }
+        else {
+          return res.json({status: 5000, msg: "server error", data: null});
+        }
+      } catch(err) {
+        return res.json({status: 5000, msg: "server error", data: null});
+      }
+    }
 }

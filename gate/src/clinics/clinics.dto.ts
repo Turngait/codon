@@ -7,11 +7,35 @@ export class ClinicDTO {
   phone?: string;
 }
 
+export class UpdateClinicDTO {
+  id: number;
+  title: string;
+  law_info: string;
+  main_site: string;
+  description: string;
+  phone: string;
+}
+
+export class DeleteClinicDTO {
+  id: number;
+}
+
 export class AddClinicPhoneDTO {
   title: string;
   clinic_id: number;
   phone_number: string;
   is_main: boolean;
+}
+
+export class UpdateClinicPhoneDTO {
+  id: number;
+  title: string;
+  phone_number: string;
+  is_main: boolean;
+}
+
+export class DeleteClinicPhoneDTO {
+  id: number;
 }
 
 export class AddClinicAddressDTO {
@@ -21,12 +45,11 @@ export class AddClinicAddressDTO {
   is_main: boolean;
 }
 
-export class DeleteClinicDTO {
+export class UpdateClinicAddressDTO {
   id: number;
-}
-
-export class DeleteClinicPhoneDTO {
-  id: number;
+  title: string;
+  address: string;
+  is_main: boolean;
 }
 
 export class DeleteClinicAddressDTO {

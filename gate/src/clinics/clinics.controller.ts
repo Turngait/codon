@@ -1,4 +1,4 @@
-import { Controller, Post, Headers, Body, Delete } from '@nestjs/common';
+import { Controller, Post, Headers, Body, Delete, Put } from '@nestjs/common';
 import { ClinicsService } from './clinics.service';
 import {
   ClinicDTO,
@@ -6,6 +6,10 @@ import {
   AddClinicPhoneDTO,
   DeleteClinicPhoneDTO,
   AddClinicAddressDTO,
+  DeleteClinicAddressDTO,
+  UpdateClinicDTO,
+  UpdateClinicAddressDTO,
+  UpdateClinicPhoneDTO,
 } from './clinics.dto';
 
 @Controller('clinics')
@@ -15,6 +19,28 @@ export class ClinicsController {
   @Post()
   async addClinic(@Body() addClinicDto: ClinicDTO, @Headers() headers) {
     return await this.clinicsService.addClinic(headers.user_id, addClinicDto);
+  }
+
+  @Put()
+  async UpdateClinic(
+    @Body() updateClinicDTO: UpdateClinicDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.updateClinic(
+      headers.user_id,
+      updateClinicDTO,
+    );
+  }
+
+  @Delete()
+  async DeleteClinic(
+    @Body() deleteClinicDTO: DeleteClinicDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.deleteClinic(
+      headers.user_id,
+      deleteClinicDTO.id,
+    );
   }
 
   @Post('/phone')
@@ -28,14 +54,14 @@ export class ClinicsController {
     );
   }
 
-  @Post('/address')
-  async addClinicAddress(
-    @Body() addClinicAddressDto: AddClinicAddressDTO,
+  @Put('/phone')
+  async updateClinicPhone(
+    @Body() updateClinicPhone: UpdateClinicPhoneDTO,
     @Headers() headers,
   ) {
-    return await this.clinicsService.addClinicAddress(
+    return await this.clinicsService.updateClinicPhone(
       headers.user_id,
-      addClinicAddressDto,
+      updateClinicPhone,
     );
   }
 
@@ -50,14 +76,36 @@ export class ClinicsController {
     );
   }
 
-  @Delete()
-  async DeleteClinicDTO(
-    @Body() deleteClinicDTO: DeleteClinicDTO,
+  @Post('/address')
+  async addClinicAddress(
+    @Body() addClinicAddressDto: AddClinicAddressDTO,
     @Headers() headers,
   ) {
-    return await this.clinicsService.deleteClinic(
+    return await this.clinicsService.addClinicAddress(
       headers.user_id,
-      deleteClinicDTO.id,
+      addClinicAddressDto,
+    );
+  }
+
+  @Put('/address')
+  async updateClinicAddress(
+    @Body() updateClinicAddress: UpdateClinicAddressDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.updateClinicAddress(
+      headers.user_id,
+      updateClinicAddress,
+    );
+  }
+
+  @Delete('/address')
+  async deleteClinicAddress(
+    @Body() delClinicAddressDto: DeleteClinicAddressDTO,
+    @Headers() headers,
+  ) {
+    return await this.clinicsService.deleteClinicAddress(
+      headers.user_id,
+      delClinicAddressDto.id,
     );
   }
 }

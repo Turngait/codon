@@ -5,3 +5,7 @@ export class UpdateUserDataDTO {
   weight: number;
   height: number;
 }
+
+export class UpdateEmailDTO {
+  email: string;
+}

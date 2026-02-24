@@ -1,6 +1,6 @@
 import { Controller, Body, Post, Put, Headers } from '@nestjs/common';
 import { UserService } from './user.service';
-import { UpdateUserDataDTO } from './user_info.dto';
+import { UpdateUserDataDTO, UpdateEmailDTO } from './user_info.dto';
 import { ChangePasswordDTO } from './change-pass.dto';
 
 @Controller('user')
@@ -31,6 +31,7 @@ export class UserController {
   async changeUserTimeZone(@Body() userTimeZone: string, @Headers() headers) {
     return await this.userService.changeTimeZone(headers.user_id, userTimeZone);
   }
+
   @Put('change-password')
   changePassword(
     @Body() changePassword: ChangePasswordDTO,
@@ -41,5 +42,10 @@ export class UserController {
       changePassword.oldPass,
       changePassword.newPass,
     );
+  }
+
+  @Put('change-password')
+  changeEmail(@Body() updateEmailDTO: UpdateEmailDTO, @Headers() headers) {
+    return this.userService.updateEmail(headers.user_id, updateEmailDTO.email);
   }
 }

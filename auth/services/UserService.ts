@@ -85,6 +85,20 @@ export default class UserService {
     return {isChanged: false, err: 4003};
   }
 
+  async updateEmail(user_id: number, email: string): Promise<{ isChanged: boolean | null; err: number | null; }> {
+    try{
+      const user_data = await this.getUserById(user_id);
+      if (!user_data) return {isChanged: false, err: 4004};
+
+      user_data.email = email;
+      await user_data.save();
+      return {isChanged: true, err: null};
+   } catch(err) {
+      console.log(err);
+      return {isChanged: false, err: 5000};
+    }
+  }
+
   async getUserByEmail(email: string) {
     return await User.findOne({where: {email}});
   }

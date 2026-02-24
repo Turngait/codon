@@ -46,12 +46,9 @@ export class AddValueDTO {
 }
 
 export class EditValueDTO {
-  analysis_id: string;
-  value: {
-    id: string;
-    title: string;
-    volume: string;
-    normal: string;
-    description: string;
-  };
+  id: number;
+  title: string;
+  volume: string;
+  normal: string;
+  description: string;
 }

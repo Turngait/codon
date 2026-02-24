@@ -117,4 +117,20 @@ export class UserService {
     });
     return result;
   }
+
+  async updateEmail(user_id: number, email: string) {
+    const result = await fetch(URI.AUTH_URL + 'email', {
+      method: 'PUT',
+      body: JSON.stringify({ user_id, email }),
+      headers: { 'Content-Type': 'application/json' },
+    }).then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        console.log(res.status);
+        return res.status;
+      }
+    });
+    return result;
+  }
 }
