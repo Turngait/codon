@@ -13,7 +13,6 @@ export class UpdateClinicDTO {
   law_info: string;
   main_site: string;
   description: string;
-  phone: string;
 }
 
 export class DeleteClinicDTO {

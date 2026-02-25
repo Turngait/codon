@@ -33,7 +33,6 @@ export class AppService {
         return res.status;
       }
     });
-    console.log(genome);
 
     const data = {
       status:

@@ -5,7 +5,6 @@ import URI from '../config/uri';
 @Injectable()
 export class CheckUserTokenMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
-    console.log(req.headers.user_token);
     if (!req.headers.user_token)
       res.json({ status: 403, msg: 'Wrong user token' });
 

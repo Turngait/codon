@@ -18,6 +18,7 @@ class AddClinicReq(BaseModel):
 
 class AddClinicPhoneReq(BaseModel):
   title: str
+  user_id: int
   clinic_id: int
   phone_number: str
   is_main: bool
@@ -94,7 +95,7 @@ async def update_clinic_phone(update_clinic_phone_req: UpdateClinicPhoneReq, db:
 async def delete_clinic_phone(del_clinic_phone_req: DeleteClinicPhoneReq, db: Session = Depends(get_db)):
     clinics_service = ClinicsServices()
     data = del_clinic_phone_req.model_dump()
-    return await clinics_service.delete_clinic_phone(data['clinic_id'], data['user_id'], db)
+    return await clinics_service.delete_clinic_phone(data['id'], data['user_id'], db)
 
 @app.post("/clinic/address")
 async def add_clinic_phone_api(add_clinic_address_req: AddClinicAddressReq, db: Session = Depends(get_db)):
@@ -110,7 +111,7 @@ async def update_clinic_address(update_clinic_address_req: UpdateClinicAddressRe
 async def delete_clinic_address(del_clinic_phone_req: DeleteClinicAddressReq, db: Session = Depends(get_db)):
     clinics_service = ClinicsServices()
     data = del_clinic_phone_req.model_dump()
-    return await clinics_service.delete_clinic_address(data['clinic_id'], data['user_id'], db)
+    return await clinics_service.delete_clinic_address(data['id'], data['user_id'], db)
 
 
    
