@@ -68,6 +68,7 @@ export class ClinicsService {
   }
 
   async updateClinicPhone(user_id: number, clinic_phone) {
+    console.log(clinic_phone);
     const result = await fetch(URI.CONS_URL + 'clinic/phone', {
       method: 'PUT',
       body: JSON.stringify({ user_id, ...clinic_phone }),

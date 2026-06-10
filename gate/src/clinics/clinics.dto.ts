@@ -31,6 +31,7 @@ export class UpdateClinicPhoneDTO {
   title: string;
   phone_number: string;
   is_main: boolean;
+  clinic_id: number;
 }
 
 export class DeleteClinicPhoneDTO {
@@ -49,6 +50,7 @@ export class UpdateClinicAddressDTO {
   title: string;
   address: string;
   is_main: boolean;
+  clinic_id: number;
 }
 
 export class DeleteClinicAddressDTO {

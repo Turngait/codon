@@ -119,8 +119,11 @@ class ClinicsServices:
 
   async def update_clinic_phone(self, new_clinic_phone, db: Session):
     try:
+      print(new_clinic_phone['clinic_id'])
+      print(new_clinic_phone['id'])
       if new_clinic_phone['is_main']:
-        is_main_exist = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.is_main == 1, ClinicPhoneModel.id == new_clinic_phone['id']).first()
+        is_main_exist = db.query(ClinicPhoneModel).filter(ClinicPhoneModel.is_main == 1, ClinicPhoneModel.id != new_clinic_phone['id'], ClinicPhoneModel.clinic_id == new_clinic_phone['clinic_id']).first()
+        print(is_main_exist)
         if is_main_exist is not None:
           return {'status': 4003, "msg": 'Main clinic phone is exist'}
 
@@ -185,7 +188,7 @@ class ClinicsServices:
   async def update_clinic_address(self, new_clinic_address, db: Session):
     try:
       if new_clinic_address['is_main']:
-        is_main_exist = db.query(ClinicAddressModel).filter(ClinicAddressModel.is_main == 1, ClinicAddressModel.id == new_clinic_address['id']).first()
+        is_main_exist = db.query(ClinicAddressModel).filter(ClinicAddressModel.is_main == 1, ClinicAddressModel.id != new_clinic_address['id'], ClinicAddressModel.clinic_id == new_clinic_address['clinic_id']).first()
         if is_main_exist is not None:
           return {'status': 4003, "msg": 'Main clinic address is exist'}
 
