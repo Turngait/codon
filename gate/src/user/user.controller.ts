@@ -44,7 +44,7 @@ export class UserController {
     );
   }
 
-  @Put('change-password')
+  @Put('email')
   changeEmail(@Body() updateEmailDTO: UpdateEmailDTO, @Headers() headers) {
     return this.userService.updateEmail(headers.user_id, updateEmailDTO.email);
   }
