@@ -28,6 +28,7 @@ export class AppModule implements NestModule {
       .forRoutes('/', 'auth', 'user', 'analysis', 'clinics');
     consumer
       .apply(CheckUserTokenMiddleware)
+      .exclude('auth/(.*)')
       .forRoutes('/', 'analysis', 'user', 'clinics');
   }
 }

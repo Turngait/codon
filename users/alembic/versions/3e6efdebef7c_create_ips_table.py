@@ -10,7 +10,7 @@ from typing import Sequence, Union
 from alembic import op
 import sqlalchemy as sa
 
-
+# TODO: Move to auth module
 # revision identifiers, used by Alembic.
 revision: str = '3e6efdebef7c'
 down_revision: Union[str, Sequence[str], None] = '85ff549e8348'

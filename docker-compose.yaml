@@ -12,6 +12,13 @@ services:
   # Gateway module in backlog for today
   cd-gate:
     image: "node:22"
+    depends_on:
+      db:
+        condition: service_started
+      db-users:
+        condition: service_started
+      mongo:
+        condition: service_started
     container_name: cd-gate
     working_dir: /home/node/app
     volumes:
@@ -33,6 +40,13 @@ services:
     build:
       context: .
       dockerfile: users.Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+      db-users:
+        condition: service_started
+      mongo:
+        condition: service_started
     ports:
       - 8084:8000
     environment:
@@ -49,6 +63,13 @@ services:
     build:
       context: .
       dockerfile: homeostasis.Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+      db-users:
+        condition: service_started
+      mongo:
+        condition: service_started
     ports:
       - 8085:8000
     environment:
@@ -56,7 +77,6 @@ services:
       PORT: 8000
       MONGOLINK: ${MONGODB}
       SQLLINK_USERS_DATA: ${SQLLINK_USERS_DATA}
-      SQLLINK_CODON: ${SQLLINK_CODON}
       SQLLINK_CODON_HEALTH: ${SQLLINK_CODON_HEALTH}
     volumes:
       - ./homeostasis:/homeostasis
@@ -65,6 +85,13 @@ services:
   
   cd-auth:
     image: "node:22"
+    depends_on:
+      db:
+        condition: service_started
+      db-users:
+        condition: service_started
+      mongo:
+        condition: service_started
     container_name: cd-auth
     working_dir: /home/node/app
     volumes:
@@ -85,6 +112,13 @@ services:
     build:
       context: .
       dockerfile: logger.Dockerfile
+    depends_on:
+      db:
+        condition: service_started
+      db-users:
+        condition: service_started
+      mongo:
+        condition: service_started
     ports:
       - "5000:5000"
     environment:
@@ -98,11 +132,17 @@ services:
   #   build:
   #     context: .
   #     dockerfile: worker.Dockerfile
+  #   depends_on:
+  #     db:
+  #        condition: service_started
+  #     db-users:
+  #       condition: service_started
+  #     mongo:
+  #       condition: service_started
   #   environment:
   #     ENV: DEV
   #     PORT: 8000
   #     SQLLINK_USERS_DATA: ${SQLLINK_USERS_DATA}
-  #     SQLLINK_CODON: ${SQLLINK_CODON}
   #     SQLLINK_USERS: ${SQLLINK_USERS}
   #     WORKER_SLEEP_TIME: ${WORKER_SLEEP_TIME}
   #   volumes:
@@ -111,6 +151,13 @@ services:
   #   container_name: cd-worker
   cd-notify:
     image: "node:18"
+    depends_on:
+      db:
+        condition: service_started
+      db-users:
+        condition: service_started
+      mongo:
+        condition: service_started
     container_name: cd-notify
     working_dir: /home/node/app
     restart: always
@@ -133,6 +180,9 @@ services:
 
   mongo-express:
     image: mongo-express
+    depends_on:
+      mongo:
+        condition: service_started
     restart: always
     links:
       - mongo
@@ -145,7 +195,6 @@ services:
     container_name: cd-mongo-express
   db:
     image: mysql:latest
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes: 
       - ./db/mysql:/var/lib/mysql
@@ -155,7 +204,6 @@ services:
 
   db-users:
     image: mysql:latest
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
     volumes: 
       - ./db/mysql_users:/var/lib/mysql
@@ -165,15 +213,23 @@ services:
 
   myadmin-codon:
     image: phpmyadmin/phpmyadmin
+    depends_on:
+      db:
+        condition: service_started
     restart: always
     links: 
       - db
+    environment:
+      PMA_HOST: db
     ports:
       - 8086:80
     container_name: cd-myadmin-codon
 
   myadmin_users:
     image: phpmyadmin/phpmyadmin
+    depends_on:
+      db-users:
+        condition: service_started
     restart: always
     links: 
       - db-users

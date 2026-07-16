@@ -6,6 +6,7 @@ import ApiAuth from 'src/models/api_auth.model';
 @Injectable()
 export class CheckTokenMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
+    console.log('here');
     if (req.headers.token) {
       const apiEntity = await ApiAuth.findOne({
         apiToken: req.headers.token,
