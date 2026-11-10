@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->string('main_site')->nullable();
-            $table->string('law_info')->nullavle();
+            $table->string('law_info')->nullable();
             $table->timestamps();
         });
     }
