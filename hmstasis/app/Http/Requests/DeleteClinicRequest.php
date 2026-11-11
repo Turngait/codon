@@ -12,7 +12,7 @@ class DeleteClinicRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,8 @@ class DeleteClinicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id' => ['required', 'integer'],
+            'clinic_id' => ['required', 'integer'],
         ];
     }
 }

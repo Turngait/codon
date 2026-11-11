@@ -12,7 +12,7 @@ class UpdateClinicRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,12 @@ class UpdateClinicRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'clinic_id' => ['required', 'integer'],
+            'title' => ['required', 'string'],
+            'main_site' => ['required', 'string'],
+            'description' => ['required', 'string'],
+            'user_id' => ['required', 'integer'],
+            "main_address" => ['required', 'string']
         ];
     }
 }

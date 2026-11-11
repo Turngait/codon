@@ -12,6 +12,7 @@ final readonly class AddClinicData
         public ?string $lawInfo,
         public string $mainAddress,
     ) {}
+
     public static function fromArray(array $data): self
     {
         return new self(
